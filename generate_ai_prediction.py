@@ -21,10 +21,10 @@ if not API_KEY:
 
 # 模型配置列表
 MODELS = [
-    {"id": "gpt-4o", "name": "GPT-5", "model_id": "SSB-Team-001"},
-    {"id": "claude-3-5-sonnet-20241022", "name": "Claude 4.5", "model_id": "team_alpha_arena_v1"},
-    {"id": "gemini-2.5-flash", "name": "Gemini 2.5", "model_id": "Gemini2.5"},
-    {"id": "deepseek-chat", "name": "DeepSeek R1", "model_id": "DeepseekR1"}
+    {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "SSB-Team-001"},
+    {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "team_alpha_arena_v1"},
+    {"id": "gemini-3.1-pro-high", "name": "Gemini 3.1 Pro", "model_id": "Gemini2.5"},
+    {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "DeepseekR1"}
 ]
 
 # 文件路径
