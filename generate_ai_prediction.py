@@ -235,32 +235,40 @@ def generate_predictions() -> Dict[str, Any]:
     # 逐个调用模型
     print("🔮 开始生成预测...\n")
     for model_config in MODELS:
-        try:
-            # 构建 prompt
-            prompt = prompt_template.format(
-                target_period=target_period,
-                target_date=target_date,
-                lottery_history=history_json,
-                prediction_date=prediction_date,
-                model_id=model_config['model_id'],
-                model_name=model_config['name']
-            )
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                if attempt > 0:
+                    print(f"  🔄 正在重试 {model_config['name']} (第 {attempt + 1} 次)...")
+                
+                # 构建 prompt
+                prompt = prompt_template.format(
+                    target_period=target_period,
+                    target_date=target_date,
+                    lottery_history=history_json,
+                    prediction_date=prediction_date,
+                    model_id=model_config['model_id'],
+                    model_name=model_config['name']
+                )
 
-            # 调用模型
-            prediction = call_ai_model(client, model_config, prompt)
+                # 调用模型
+                prediction = call_ai_model(client, model_config, prompt)
 
-            # 验证数据
-            if validate_prediction(prediction):
-                all_predictions.append(prediction)
-                print(f"  ✓ 验证通过\n")
-            else:
-                print(f"  ✗ 验证失败，跳过该模型\n")
-
-        except Exception as e:
-            print(f"  ✗ 处理 {model_config['name']} 时失败")
-            print(f"  错误类型: {type(e).__name__}")
-            print(f"  错误信息: {str(e)}\n")
-            continue
+                # 验证数据
+                if validate_prediction(prediction):
+                    all_predictions.append(prediction)
+                    print(f"  ✓ 验证通过\n")
+                    break  # 成功，跳出重试循环
+                else:
+                    print(f"  ✗ 验证失败")
+                    if attempt < max_retries - 1:
+                        import time
+                        time.sleep(2)
+            except Exception as e:
+                print(f"  ✗ 处理 {model_config['name']} 时失败: {str(e)}")
+                if attempt < max_retries - 1:
+                    import time
+                    time.sleep(2)
 
     # 构建最终输出
     if not all_predictions:
