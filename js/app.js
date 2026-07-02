@@ -110,6 +110,123 @@ function renderModelsGrid() {
         const modelCard = Components.createModelCard(model, actualResult);
         modelsGridEl.appendChild(modelCard);
     });
+
+    // 渲染综合推荐卡片
+    renderAggregateCard(actualResult);
+}
+
+// 渲染综合推荐卡片
+function renderAggregateCard(actualResult) {
+    if (!appData.aiPredictions || !appData.aiPredictions.models) return;
+
+    const aggregateCardEl = document.getElementById('aggregateCard');
+    if (!aggregateCardEl) return;
+
+    // 收集所有红球和蓝球
+    const redFreq = {};
+    const blueFreq = {};
+
+    appData.aiPredictions.models.forEach(model => {
+        model.predictions.forEach(prediction => {
+            prediction.red_balls.forEach(ball => {
+                redFreq[ball] = (redFreq[ball] || 0) + 1;
+            });
+            blueFreq[prediction.blue_ball] = (blueFreq[prediction.blue_ball] || 0) + 1;
+        });
+    });
+
+    // 选取高频红球 前6个
+    const topReds = Object.entries(redFreq)
+        .sort((a, b) => b[1] - a[1]) // 按频率降序
+        .slice(0, 6)
+        .map(item => item[0])
+        .sort((a, b) => parseInt(a) - parseInt(b)); // 从小到大排序
+
+    // 选取高频蓝球 前1个
+    const topBlue = Object.entries(blueFreq)
+        .sort((a, b) => b[1] - a[1])[0][0];
+
+    // 构建号码字符串用于复制
+    const redStr = topReds.join(' ');
+    const copyText = `双色球第 ${appData.aiPredictions.target_period} 期综合推荐\n红球: ${redStr} | 蓝球: ${topBlue}`;
+
+    aggregateCardEl.style.display = 'block';
+    
+    // 计算命中（如果已开奖）
+    let hitResult = null;
+    if (actualResult) {
+        hitResult = Components.compareNumbers({ red_balls: topReds, blue_ball: topBlue }, actualResult);
+    }
+
+    aggregateCardEl.innerHTML = `
+        <div class="aggregate-header">
+            <div class="aggregate-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                AI 综合高频推荐
+            </div>
+            <button class="copy-btn" id="copyAggregateBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                复制给彩票店
+            </button>
+        </div>
+        <div class="aggregate-content">
+            <div class="aggregate-subtitle">基于本次预测的所有模型数据，提取出现频率最高的组合：</div>
+            <div class="strategy-row" style="padding: 0;">
+                <div class="strategy-balls"></div>
+            </div>
+        </div>
+    `;
+
+    // 添加球到DOM
+    const ballsContainer = aggregateCardEl.querySelector('.strategy-balls');
+    topReds.forEach(num => {
+        const isHit = hitResult?.redHits?.includes(num);
+        ballsContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', isHit));
+    });
+    
+    ballsContainer.appendChild(Components.createBallDivider());
+    const isBlueHit = hitResult?.blueHit;
+    ballsContainer.appendChild(Components.createLotteryBall(topBlue, 'blue', 'md', isBlueHit));
+
+    // 如果已开奖，显示命中情况
+    if (hitResult) {
+        const stats = document.createElement('div');
+        stats.style.marginTop = '0.5rem';
+        stats.style.display = 'inline-block';
+        stats.className = 'strategy-hit-stats';
+        stats.innerHTML = \`
+            <span class="hit-stat red">\${hitResult.redHitCount}红</span>
+            <span class="hit-stat \${hitResult.blueHit ? 'blue' : 'miss'}">\${hitResult.blueHit ? '1' : '0'}蓝</span>
+        \`;
+        aggregateCardEl.querySelector('.aggregate-content').appendChild(stats);
+    }
+
+    // 绑定复制按钮事件
+    const copyBtn = aggregateCardEl.querySelector('#copyAggregateBtn');
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(copyText).then(() => {
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = \`
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                已复制！
+            \`;
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('复制失败:', err);
+            alert('复制失败，请手动选择号码复制');
+        });
+    });
 }
 
 // 创建已开奖状态横幅
