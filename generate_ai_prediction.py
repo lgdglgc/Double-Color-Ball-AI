@@ -92,12 +92,20 @@ def extract_json_from_response(response_text: str) -> str:
     # 如果有 ```json 标记，提取中间的内容
     if "```json" in text:
         start = text.find("```json") + 7
-        end = text.find("```", start)
-        text = text[start:end].strip()
+        end = text.rfind("```")
+        if end > start:
+            text = text[start:end].strip()
     elif "```" in text:
         start = text.find("```") + 3
-        end = text.find("```", start)
-        text = text[start:end].strip()
+        end = text.rfind("```")
+        if end > start:
+            text = text[start:end].strip()
+
+    # 进一步兜底：寻找第一个 { 和最后一个 }
+    start_idx = text.find("{")
+    end_idx = text.rfind("}")
+    if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+        text = text[start_idx:end_idx+1]
 
     return text
 
