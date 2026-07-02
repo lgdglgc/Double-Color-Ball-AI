@@ -272,16 +272,16 @@ def generate_predictions() -> Dict[str, Any]:
 
                 # 调用模型
                 print(f"  ⏳ 正在调用 {model_config['name']} 模型...")
-                response = client.chat.completions.create(
-                    model=model_config['id'],
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": full_prompt
-                        }
-                    ],
-                    temperature=0.8
-                )
+                
+                req_kwargs = {
+                    "model": model_config['id'],
+                    "messages": [{"role": "user", "content": full_prompt}]
+                }
+                # Gemini 对参数极其严格，部分中转代理传递 temperature 会导致 INVALID_ARGUMENT 400 错误
+                if "gemini" not in model_config['id'].lower():
+                    req_kwargs["temperature"] = 0.8
+
+                response = client.chat.completions.create(**req_kwargs)
 
                 response_text = response.choices[0].message.content.strip()
                 json_text = extract_json_from_response(response_text)
