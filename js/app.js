@@ -122,39 +122,48 @@ function renderAggregateCard(actualResult) {
     const aggregateCardEl = document.getElementById('aggregateCard');
     if (!aggregateCardEl) return;
 
-    // 收集所有红球和蓝球
-    const redFreq = {};
-    const blueFreq = {};
+    let standardReds = [];
+    let standardBlue = "";
+    let danReds = [];
+    let tuoReds = [];
+    let multipleBlues = [];
+    let analysisReasoning = null;
 
-    appData.aiPredictions.models.forEach(model => {
-        model.predictions.forEach(prediction => {
-            prediction.red_balls.forEach(ball => {
-                redFreq[ball] = (redFreq[ball] || 0) + 1;
+    if (appData.aiPredictions.meta_prediction) {
+        // 使用超级裁判 AI 的终极汇总结果
+        const meta = appData.aiPredictions.meta_prediction;
+        standardReds = meta.standard_prediction.red_balls;
+        standardBlue = meta.standard_prediction.blue_ball;
+        danReds = meta.dantuo_prediction.dan_reds;
+        tuoReds = meta.dantuo_prediction.tuo_reds;
+        multipleBlues = meta.dantuo_prediction.blue_balls;
+        analysisReasoning = meta.analysis_reasoning;
+    } else {
+        // 向下兼容：如果没有 meta_prediction，回退到原始的数学频率统计
+        const redFreq = {};
+        const blueFreq = {};
+
+        appData.aiPredictions.models.forEach(model => {
+            model.predictions.forEach(prediction => {
+                prediction.red_balls.forEach(ball => {
+                    redFreq[ball] = (redFreq[ball] || 0) + 1;
+                });
+                blueFreq[prediction.blue_ball] = (blueFreq[prediction.blue_ball] || 0) + 1;
             });
-            blueFreq[prediction.blue_ball] = (blueFreq[prediction.blue_ball] || 0) + 1;
         });
-    });
 
-    // 选取所有按频率排序的球
-    const sortedReds = Object.entries(redFreq)
-        .sort((a, b) => b[1] - a[1]) // 按频率降序
-        .map(item => item[0]);
+        const sortedReds = Object.entries(redFreq).sort((a, b) => b[1] - a[1]).map(item => item[0]);
+        const sortedBlues = Object.entries(blueFreq).sort((a, b) => b[1] - a[1]).map(item => item[0]);
 
-    const sortedBlues = Object.entries(blueFreq)
-        .sort((a, b) => b[1] - a[1])
-        .map(item => item[0]);
-
-    // 常规单式：前6红 + 1蓝
-    const standardReds = sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b));
-    const standardBlue = sortedBlues[0];
-
-    // 胆拖复式：4胆 + 3拖 + 2蓝 = 6注12元
-    const danReds = sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b));
-    const tuoReds = sortedReds.slice(4, 7).sort((a, b) => parseInt(a) - parseInt(b));
-    const multipleBlues = sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b));
+        standardReds = sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b));
+        standardBlue = sortedBlues[0];
+        danReds = sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b));
+        tuoReds = sortedReds.slice(4, 7).sort((a, b) => parseInt(a) - parseInt(b));
+        multipleBlues = sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b));
+    }
 
     // 构建号码字符串用于复制
-    const copyText = `双色球第 ${appData.aiPredictions.target_period} 期综合推荐\n\n【常规单式】\n红球: ${standardReds.join(' ')} | 蓝球: ${standardBlue}\n\n【4胆3拖2蓝】(6注12元)\n红胆: ${danReds.join(' ')}\n红拖: ${tuoReds.join(' ')}\n蓝球: ${multipleBlues.join(' ')}`;
+    const copyText = `双色球第 ${appData.aiPredictions.target_period} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n\n【常规单式】\n红球: ${standardReds.join(' ')} | 蓝球: ${standardBlue}\n\n【4胆3拖2蓝】(6注12元)\n红胆: ${danReds.join(' ')}\n红拖: ${tuoReds.join(' ')}\n蓝球: ${multipleBlues.join(' ')}`;
 
     aggregateCardEl.style.display = 'block';
     
@@ -178,6 +187,17 @@ function renderAggregateCard(actualResult) {
                 复制给彩票店
             </button>
         </div>
+        ${analysisReasoning ? `
+        <div class="meta-reasoning-box">
+            <div class="meta-reasoning-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                </svg>
+                裁判点评
+            </div>
+            <div class="meta-reasoning-text">${analysisReasoning}</div>
+        </div>
+        ` : ''}
         <div class="aggregate-content">
             <div class="aggregate-section">
                 <div class="aggregate-section-title">【常规单式】</div>

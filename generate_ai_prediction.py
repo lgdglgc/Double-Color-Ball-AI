@@ -206,6 +206,15 @@ def generate_predictions() -> Dict[str, Any]:
         print(f"  ✗ Prompt 模板加载失败: {str(e)}\n")
         return None
 
+def load_meta_prompt_template() -> str:
+    """加载 Meta AI Prompt 模板"""
+    try:
+        with open("prompts/meta_prompt_template.txt", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        print("❌ 找不到 prompts/meta_prompt_template.txt")
+        return ""
+
     # 加载历史数据
     print("📊 加载历史开奖数据...")
     lottery_data = load_lottery_history()
@@ -299,9 +308,61 @@ def generate_predictions() -> Dict[str, Any]:
         print("❌ 没有成功生成任何预测")
         return None
 
+    # ============== Meta AI 混合专家汇总分析 ==============
+    print("\n🧠 开始 Meta AI 汇总分析...")
+    meta_prompt_template = load_meta_prompt_template()
+    meta_prediction = None
+    if meta_prompt_template:
+        # 构建各个模型的预测摘要
+        summary_lines = []
+        for p in all_predictions:
+            summary_lines.append(f"【{p.get('model_name', '未知模型')}】的预测：")
+            for i, group in enumerate(p.get('predictions', [])):
+                reds = ",".join(group['red_balls'])
+                summary_lines.append(f"  预测{i+1}: 红球[{reds}] 蓝球[{group['blue_ball']}] (理由: {group.get('strategy', '无')})")
+        
+        base_predictions_summary = "\n".join(summary_lines)
+        
+        system_instruction = "你是一个“超级裁判 AI”及双色球究极分析师。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
+        full_meta_prompt = system_instruction + meta_prompt_template.format(
+            lottery_history=history_json,
+            base_predictions_summary=base_predictions_summary
+        )
+
+        # 优先使用 Claude Opus 或 GPT-120B 作为 Meta 模型
+        meta_model_config = next((m for m in MODELS if "opus" in m["id"].lower()), MODELS[0])
+        
+        print(f"  ⏳ 正在调用超级裁判模型 {meta_model_config['name']}...")
+        max_meta_retries = 3
+        for attempt in range(max_meta_retries):
+            try:
+                if attempt > 0:
+                    print(f"  🔄 正在重试 Meta AI (第 {attempt + 1} 次)...")
+                meta_response = client.chat.completions.create(
+                    model=meta_model_config['id'],
+                    messages=[{"role": "user", "content": full_meta_prompt}],
+                    temperature=0.7
+                )
+                meta_json_text = extract_json_from_response(meta_response.choices[0].message.content.strip())
+                meta_prediction = json.loads(meta_json_text)
+                
+                # 简单验证
+                if "standard_prediction" in meta_prediction and "dantuo_prediction" in meta_prediction:
+                    print("  ✓ Meta AI 分析完成！")
+                    break
+                else:
+                    print("  ✗ Meta AI 返回格式不完整")
+                    meta_prediction = None
+            except Exception as e:
+                print(f"  ✗ Meta AI 分析失败: {e}")
+                meta_prediction = None
+                import time
+                time.sleep(2)
+
     result = {
         "prediction_date": prediction_date,
         "target_period": target_period,
+        "meta_prediction": meta_prediction,
         "models": all_predictions
     }
 
