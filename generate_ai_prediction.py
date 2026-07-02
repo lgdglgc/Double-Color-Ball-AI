@@ -250,7 +250,9 @@ def generate_predictions() -> Dict[str, Any]:
                     print(f"  🔄 正在重试 {model_config['name']} (第 {attempt + 1} 次)...")
                 
                 # 构建 prompt
-                prompt = prompt_template.format(
+                system_instruction = "你是一个专业的彩票数据分析师，擅长基于历史数据进行模式分析和预测。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
+                
+                full_prompt = system_instruction + prompt_template.format(
                     target_period=target_period,
                     target_date=target_date,
                     lottery_history=history_json,
@@ -260,7 +262,21 @@ def generate_predictions() -> Dict[str, Any]:
                 )
 
                 # 调用模型
-                prediction = call_ai_model(client, model_config, prompt)
+                print(f"  ⏳ 正在调用 {model_config['name']} 模型...")
+                response = client.chat.completions.create(
+                    model=model_config['id'],
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": full_prompt
+                        }
+                    ],
+                    temperature=0.8
+                )
+
+                response_text = response.choices[0].message.content.strip()
+                json_text = extract_json_from_response(response_text)
+                prediction = json.loads(json_text)
 
                 # 验证数据
                 if validate_prediction(prediction):
