@@ -191,6 +191,15 @@ def validate_prediction(prediction: Dict[str, Any]) -> bool:
         print(f"    ⚠️  验证出错: {str(e)}")
         return False
 
+def load_meta_prompt_template() -> str:
+    """加载 Meta AI Prompt 模板"""
+    try:
+        with open("prompts/meta_prompt_template.txt", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        print("❌ 找不到 prompts/meta_prompt_template.txt")
+        return ""
+
 def generate_predictions() -> Dict[str, Any]:
     """生成所有模型的预测"""
     print("\n" + "="*50)
@@ -205,15 +214,6 @@ def generate_predictions() -> Dict[str, Any]:
     except Exception as e:
         print(f"  ✗ Prompt 模板加载失败: {str(e)}\n")
         return None
-
-def load_meta_prompt_template() -> str:
-    """加载 Meta AI Prompt 模板"""
-    try:
-        with open("prompts/meta_prompt_template.txt", "r", encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        print("❌ 找不到 prompts/meta_prompt_template.txt")
-        return ""
 
     # 加载历史数据
     print("📊 加载历史开奖数据...")
