@@ -199,10 +199,10 @@ function renderAggregateCard(actualResult) {
         stats.style.marginTop = '0.5rem';
         stats.style.display = 'inline-block';
         stats.className = 'strategy-hit-stats';
-        stats.innerHTML = \`
-            <span class="hit-stat red">\${hitResult.redHitCount}红</span>
-            <span class="hit-stat \${hitResult.blueHit ? 'blue' : 'miss'}">\${hitResult.blueHit ? '1' : '0'}蓝</span>
-        \`;
+        stats.innerHTML = `
+            <span class="hit-stat red">${hitResult.redHitCount}红</span>
+            <span class="hit-stat ${hitResult.blueHit ? 'blue' : 'miss'}">${hitResult.blueHit ? '1' : '0'}蓝</span>
+        `;
         aggregateCardEl.querySelector('.aggregate-content').appendChild(stats);
     }
 
@@ -211,12 +211,12 @@ function renderAggregateCard(actualResult) {
     copyBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(copyText).then(() => {
             const originalHtml = copyBtn.innerHTML;
-            copyBtn.innerHTML = \`
+            copyBtn.innerHTML = `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                     <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 已复制！
-            \`;
+            `;
             copyBtn.classList.add('copied');
             setTimeout(() => {
                 copyBtn.innerHTML = originalHtml;
