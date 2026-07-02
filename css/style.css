@@ -1515,9 +1515,43 @@ body::after {
 
 .footer-disclaimer {
     font-size: 0.75rem;
-    color: var(--slate-300);
+    color: var(--slate-500);
 }
 
+.aggregate-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.aggregate-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--slate-700);
+}
+
+.ball-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.125rem;
+}
+
+.red-label {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.blue-label {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+/* ==================== Model Cards Grid ==================== */
 /* ==================== Disclaimer Card ==================== */
 .disclaimer-card {
     display: flex;

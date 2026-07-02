@@ -135,28 +135,32 @@ function renderAggregateCard(actualResult) {
         });
     });
 
-    // 选取高频红球 前6个
-    const topReds = Object.entries(redFreq)
+    // 选取所有按频率排序的球
+    const sortedReds = Object.entries(redFreq)
         .sort((a, b) => b[1] - a[1]) // 按频率降序
-        .slice(0, 6)
-        .map(item => item[0])
-        .sort((a, b) => parseInt(a) - parseInt(b)); // 从小到大排序
+        .map(item => item[0]);
 
-    // 选取高频蓝球 前1个
-    const topBlue = Object.entries(blueFreq)
-        .sort((a, b) => b[1] - a[1])[0][0];
+    const sortedBlues = Object.entries(blueFreq)
+        .sort((a, b) => b[1] - a[1])
+        .map(item => item[0]);
+
+    // 常规单式：前6红 + 1蓝
+    const standardReds = sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b));
+    const standardBlue = sortedBlues[0];
+
+    // 胆拖复式：4胆 + 3拖 + 2蓝 = 6注12元
+    const danReds = sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b));
+    const tuoReds = sortedReds.slice(4, 7).sort((a, b) => parseInt(a) - parseInt(b));
+    const multipleBlues = sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b));
 
     // 构建号码字符串用于复制
-    const redStr = topReds.join(' ');
-    const copyText = `双色球第 ${appData.aiPredictions.target_period} 期综合推荐\n红球: ${redStr} | 蓝球: ${topBlue}`;
+    const copyText = `双色球第 ${appData.aiPredictions.target_period} 期综合推荐\n\n【常规单式】\n红球: ${standardReds.join(' ')} | 蓝球: ${standardBlue}\n\n【4胆3拖2蓝】(6注12元)\n红胆: ${danReds.join(' ')}\n红拖: ${tuoReds.join(' ')}\n蓝球: ${multipleBlues.join(' ')}`;
 
     aggregateCardEl.style.display = 'block';
     
     // 计算命中（如果已开奖）
-    let hitResult = null;
-    if (actualResult) {
-        hitResult = Components.compareNumbers({ red_balls: topReds, blue_ball: topBlue }, actualResult);
-    }
+    const actualReds = actualResult ? actualResult.red_balls : [];
+    const actualBlue = actualResult ? actualResult.blue_ball : null;
 
     aggregateCardEl.innerHTML = `
         <div class="aggregate-header">
@@ -175,36 +179,61 @@ function renderAggregateCard(actualResult) {
             </button>
         </div>
         <div class="aggregate-content">
-            <div class="aggregate-subtitle">基于本次预测的所有模型数据，提取出现频率最高的组合：</div>
-            <div class="strategy-row" style="padding: 0;">
-                <div class="strategy-balls"></div>
+            <div class="aggregate-section">
+                <div class="aggregate-section-title">【常规单式】</div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="standardBallsContainer"></div>
+                </div>
+            </div>
+            
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div class="aggregate-section-title">【4胆3拖2蓝】(6注12元)</div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="dantuoBallsContainer" style="flex-wrap: wrap; gap: 0.5rem 0.25rem;"></div>
+                </div>
             </div>
         </div>
     `;
 
-    // 添加球到DOM
-    const ballsContainer = aggregateCardEl.querySelector('.strategy-balls');
-    topReds.forEach(num => {
-        const isHit = hitResult?.redHits?.includes(num);
-        ballsContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', isHit));
+    // 渲染常规单式球
+    const standardContainer = aggregateCardEl.querySelector('#standardBallsContainer');
+    standardReds.forEach(num => {
+        standardContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    standardContainer.appendChild(Components.createBallDivider());
+    standardContainer.appendChild(Components.createLotteryBall(standardBlue, 'blue', 'md', actualBlue === standardBlue));
+
+    // 渲染胆拖复式球
+    const dantuoContainer = aggregateCardEl.querySelector('#dantuoBallsContainer');
+    
+    const danLabel = document.createElement('span');
+    danLabel.className = 'ball-label red-label';
+    danLabel.textContent = '胆';
+    dantuoContainer.appendChild(danLabel);
+    
+    danReds.forEach(num => {
+        dantuoContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
     });
     
-    ballsContainer.appendChild(Components.createBallDivider());
-    const isBlueHit = hitResult?.blueHit;
-    ballsContainer.appendChild(Components.createLotteryBall(topBlue, 'blue', 'md', isBlueHit));
-
-    // 如果已开奖，显示命中情况
-    if (hitResult) {
-        const stats = document.createElement('div');
-        stats.style.marginTop = '0.5rem';
-        stats.style.display = 'inline-block';
-        stats.className = 'strategy-hit-stats';
-        stats.innerHTML = `
-            <span class="hit-stat red">${hitResult.redHitCount}红</span>
-            <span class="hit-stat ${hitResult.blueHit ? 'blue' : 'miss'}">${hitResult.blueHit ? '1' : '0'}蓝</span>
-        `;
-        aggregateCardEl.querySelector('.aggregate-content').appendChild(stats);
-    }
+    const tuoLabel = document.createElement('span');
+    tuoLabel.className = 'ball-label red-label';
+    tuoLabel.style.marginLeft = '0.5rem';
+    tuoLabel.textContent = '拖';
+    dantuoContainer.appendChild(tuoLabel);
+    
+    tuoReds.forEach(num => {
+        dantuoContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    
+    const blueLabel = document.createElement('span');
+    blueLabel.className = 'ball-label blue-label';
+    blueLabel.style.marginLeft = '0.5rem';
+    blueLabel.textContent = '蓝';
+    dantuoContainer.appendChild(blueLabel);
+    
+    multipleBlues.forEach(num => {
+        dantuoContainer.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
+    });
 
     // 绑定复制按钮事件
     const copyBtn = aggregateCardEl.querySelector('#copyAggregateBtn');
