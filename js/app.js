@@ -297,7 +297,7 @@ function renderAggregateCard(actualResult) {
 
     let copyText63 = `${headerText}\n【6+3 蓝球复式】(3注6元)\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}\n`;
 
-    let copyText = copyTextSingle + '\n' + copyText82 + '\n' + copyText432 + '\n' + copyText442 + '\n' + copyText72 + '\n' + copyText522 + '\n' + copyText63;
+    let copyText = copyTextSingle + '\n' + copyText63 + '\n' + copyText72 + '\n' + copyText82 + '\n' + copyText522 + '\n' + copyText432 + '\n' + copyText442;
     copyText = copyText.trim();
 
     aggregateCardEl.style.display = 'block';
@@ -346,6 +346,30 @@ function renderAggregateCard(actualResult) {
             
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【6+3 蓝球复式】(3注6元)</div>
+                    <button class="section-copy-btn" data-text-id="copy63">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="compound63Container" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【7+2 经济复式】(42注84元)</div>
+                    <button class="section-copy-btn" data-text-id="copy72">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="compound72Container" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="aggregate-section-title" style="margin-bottom: 0;">【8+2 经济小复式】(56注112元)</div>
                     <button class="section-copy-btn" data-text-id="copy82">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
@@ -353,6 +377,18 @@ function renderAggregateCard(actualResult) {
                 </div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="compound82Container" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【5胆2拖2蓝】(4注8元)</div>
+                    <button class="section-copy-btn" data-text-id="copy522">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="dantuo522Container" style="align-items: center;"></div>
                 </div>
             </div>
 
@@ -377,42 +413,6 @@ function renderAggregateCard(actualResult) {
                 </div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuoBallsContainer" style="align-items: center;"></div>
-                </div>
-            </div>
-
-            <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="aggregate-section-title" style="margin-bottom: 0;">【5胆2拖2蓝】(4注8元)</div>
-                    <button class="section-copy-btn" data-text-id="copy522">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
-                    </button>
-                </div>
-                <div class="strategy-row" style="padding: 0;">
-                    <div class="strategy-balls" id="dantuo522Container" style="align-items: center;"></div>
-                </div>
-            </div>
-
-            <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="aggregate-section-title" style="margin-bottom: 0;">【7+2 经济复式】(42注84元)</div>
-                    <button class="section-copy-btn" data-text-id="copy72">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
-                    </button>
-                </div>
-                <div class="strategy-row" style="padding: 0;">
-                    <div class="strategy-balls" id="compound72Container" style="align-items: center;"></div>
-                </div>
-            </div>
-
-            <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="aggregate-section-title" style="margin-bottom: 0;">【6+3 蓝球复式】(3注6元)</div>
-                    <button class="section-copy-btn" data-text-id="copy63">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
-                    </button>
-                </div>
-                <div class="strategy-row" style="padding: 0;">
-                    <div class="strategy-balls" id="compound63Container" style="align-items: center;"></div>
                 </div>
             </div>
         </div>
