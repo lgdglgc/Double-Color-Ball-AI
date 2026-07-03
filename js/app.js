@@ -260,7 +260,7 @@ function renderAggregateCard(actualResult) {
             <div class="aggregate-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="aggregate-section-title" style="margin-bottom: 0;">【精选 5 注单式】(10元)</div>
-                    <button class="section-copy-btn" data-text-id="copySingle" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                    <button class="section-copy-btn" data-text-id="copySingle">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
                 </div>
@@ -271,7 +271,7 @@ function renderAggregateCard(actualResult) {
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="aggregate-section-title" style="margin-bottom: 0;">【8+2 经济小复式】(56注112元)</div>
-                    <button class="section-copy-btn" data-text-id="copy82" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                    <button class="section-copy-btn" data-text-id="copy82">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
                 </div>
@@ -283,7 +283,7 @@ function renderAggregateCard(actualResult) {
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="aggregate-section-title" style="margin-bottom: 0;">【4胆3拖2蓝】(6注12元)</div>
-                    <button class="section-copy-btn" data-text-id="copy432" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                    <button class="section-copy-btn" data-text-id="copy432">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
                 </div>
@@ -295,7 +295,7 @@ function renderAggregateCard(actualResult) {
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div class="aggregate-section-title" style="margin-bottom: 0;">【4胆4拖2蓝】(12注24元)</div>
-                    <button class="section-copy-btn" data-text-id="copy442" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                    <button class="section-copy-btn" data-text-id="copy442">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
                 </div>
@@ -448,10 +448,10 @@ function renderAggregateCard(actualResult) {
                     </svg>
                     已复制
                 `;
-                e.currentTarget.style.color = 'var(--emerald-600)';
+                e.currentTarget.classList.add('copied');
                 setTimeout(() => {
                     e.currentTarget.innerHTML = originalHtml;
-                    e.currentTarget.style.color = 'var(--blue-600)';
+                    e.currentTarget.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
                 console.error('复制失败:', err);
