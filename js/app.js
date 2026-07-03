@@ -4,6 +4,7 @@
 
 // 全局状态
 let currentAnalysisPeriod = 30;
+let currentSortMode = 'number';
 let chartInstances = {};
 
 let appData = {
@@ -657,6 +658,38 @@ function renderHistoryTable() {
 }
 
 // 渲染频率图表 (分析标签页)
+
+function renderOmissionPanel() {
+    if (!appData.lotteryHistory) return;
+    const allData = appData.lotteryHistory.data;
+    const redOmissions = calculateOmissions(allData, 'red');
+    const blueOmissions = calculateOmissions(allData, 'blue');
+
+    const topRed = Object.entries(redOmissions).sort((a,b) => b[1]-a[1]).slice(0, 5);
+    const topBlue = Object.entries(blueOmissions).sort((a,b) => b[1]-a[1]).slice(0, 5);
+
+    function makeTag(ball, omission, isBlue) {
+        const intensity = Math.min(omission / 30, 1);
+        const baseHue = isBlue ? '220' : '0';
+        const bg = isBlue ? `hsl(220, ${60 + intensity * 40}%, ${90 - intensity * 35}%)` : `hsl(0, ${60 + intensity * 40}%, ${90 - intensity * 35}%)`;
+        const fg = intensity > 0.5 ? 'white' : (isBlue ? '#1e3a8a' : '#7f1d1d');
+        return `<div title="${ball}号 已遗漏${omission}期" style="
+            display: inline-flex; flex-direction: column; align-items: center;
+            background: ${bg}; color: ${fg}; border-radius: 8px;
+            padding: 0.3rem 0.6rem; font-weight: 700; cursor: default;
+            transition: transform 0.15s; min-width: 48px; text-align: center;
+        " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+            <span style="font-size: 1rem;">${ball}</span>
+            <span style="font-size: 0.6rem; font-weight: 600; margin-top: 2px; opacity: 0.85;">遗漏${omission}</span>
+        </div>`;
+    }
+
+    const redEl = document.getElementById('redOmissionRanking');
+    if (redEl) redEl.innerHTML = topRed.map(([b,o]) => makeTag(b, o, false)).join('');
+    const blueEl = document.getElementById('blueOmissionRanking');
+    if (blueEl) blueEl.innerHTML = topBlue.map(([b,o]) => makeTag(b, o, true)).join('');
+}
+
 function renderFrequencyChart() {
     const dataList = getFilteredLotteryData();
     if (dataList.length === 0) return;
@@ -671,21 +704,37 @@ function renderFrequencyChart() {
         draw.red_balls.forEach(ball => frequency[ball] = (frequency[ball] || 0) + 1);
     });
 
-    const labels = Object.keys(frequency).sort();
-    const data = labels.map(label => frequency[label]);
+    const omissions = calculateOmissions(appData.lotteryHistory.data, 'red');
+    const avg = Object.values(frequency).reduce((a,b)=>a+b,0) / 33;
+
+    let entries = Object.entries(frequency);
+
+    // Sort based on currentSortMode
+    if (currentSortMode === 'freq') {
+        entries.sort((a,b) => b[1] - a[1]);
+    } else if (currentSortMode === 'omission') {
+        entries.sort((a,b) => omissions[b[0]] - omissions[a[0]]);
+    } else {
+        entries.sort((a,b) => a[0].localeCompare(b[0]));
+    }
+
+    const labels = entries.map(e => e[0]);
+    const data = entries.map(e => e[1]);
     const maxFreq = Math.max(...data);
     const minFreq = Math.min(...data);
-    const avg = data.reduce((a, b) => a + b, 0) / 33;
 
-    // Colors
-    const backgroundColors = data.map(val => {
-        if (val === maxFreq) return '#dc2626'; // hot
-        if (val === minFreq) return '#94a3b8'; // cold
-        return '#fca5a5';
-    });
+    // Heat gradient coloring
+    function heatColor(val) {
+        if (maxFreq === minFreq) return '#fca5a5';
+        const t = (val - minFreq) / (maxFreq - minFreq); // 0=cold, 1=hot
+        if (t > 0.8) return '#dc2626';    // dark red - extremely hot
+        if (t > 0.6) return '#ef4444';    // red - hot
+        if (t > 0.4) return '#f87171';    // medium red
+        if (t > 0.2) return '#fca5a5';    // light red - warm
+        return '#94a3b8';                 // gray - cold
+    }
 
-    const omissions = calculateOmissions(appData.lotteryHistory.data, 'red');
-    const omissionData = labels.map(label => omissions[label]);
+    const backgroundColors = data.map(v => heatColor(v));
 
     chartInstances['frequencyChart'] = new Chart(chartEl, {
         type: 'bar',
@@ -695,35 +744,51 @@ function renderFrequencyChart() {
                 {
                     type: 'line',
                     label: '理论均值',
-                    data: Array(33).fill(avg),
-                    borderColor: '#94a3b8',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
+                    data: Array(labels.length).fill(avg),
+                    borderColor: 'rgba(100,116,139,0.6)',
+                    borderWidth: 1.5,
+                    borderDash: [6, 4],
                     pointRadius: 0,
-                    fill: false
+                    fill: false,
+                    order: 0
                 },
                 {
                     type: 'bar',
                     label: '出现次数',
                     data: data,
                     backgroundColor: backgroundColors,
-                    borderRadius: 4
+                    borderRadius: 5,
+                    order: 1
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: { duration: 500, easing: 'easeInOutQuart' },
             plugins: {
+                legend: { display: false },
                 tooltip: {
+                    backgroundColor: 'rgba(15,23,42,0.9)',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#cbd5e1',
+                    padding: 12,
                     callbacks: {
-                        afterLabel: function(context) {
-                            if (context.dataset.type === 'line') return null;
-                            const ball = context.label;
-                            return `当前遗漏: ${omissions[ball]} 期`;
+                        title: ctx => `${ctx[0].label} 号`,
+                        label: ctx => {
+                            if (ctx.dataset.type === 'line') return null;
+                            return [
+                                `出现次数: ${ctx.raw} 次`,
+                                `当前遗漏: ${omissions[ctx.label]} 期`,
+                                `热度: ${(ctx.raw / maxFreq * 100).toFixed(0)}%`
+                            ];
                         }
                     }
                 }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true }
             }
         }
     });
@@ -768,6 +833,17 @@ function getHeatColor(value, min, max, baseColor) {
     // return color based on ratio. Simplified: return baseColor with opacity or a mix
     // but Chart.js works well with rgba. For simplicity, just return different colors for top 3 and bottom 3
     return baseColor;
+}
+
+
+function setSortMode(mode) {
+    currentSortMode = mode;
+    // Update button active states
+    ['number','freq','omission'].forEach(m => {
+        const btn = document.getElementById(`sortBy${m.charAt(0).toUpperCase() + m.slice(1)}`);
+        if (btn) btn.classList.toggle('active', m === mode);
+    });
+    renderFrequencyChart();
 }
 
 function renderStatisticsCards() {
@@ -1001,13 +1077,101 @@ function renderZoneDistributionChart() {
 }
 
 // 渲染所有分析图表
+
+function renderScatterChart() {
+    const dataList = getFilteredLotteryData();
+    if (dataList.length === 0) return;
+    const chartEl = document.getElementById('scatterChart');
+    if (!chartEl) return;
+
+    if (chartInstances['scatterChart']) chartInstances['scatterChart'].destroy();
+
+    const frequency = {};
+    for (let i = 1; i <= 33; i++) frequency[i.toString().padStart(2, '0')] = 0;
+    dataList.forEach(draw => {
+        draw.red_balls.forEach(ball => frequency[ball] = (frequency[ball] || 0) + 1);
+    });
+
+    const omissions = calculateOmissions(appData.lotteryHistory.data, 'red');
+
+    const scatterData = Object.entries(frequency).map(([ball, freq]) => ({
+        x: freq,
+        y: omissions[ball],
+        label: ball
+    }));
+
+    const maxFreq = Math.max(...scatterData.map(d => d.x));
+    const maxOmission = Math.max(...scatterData.map(d => d.y));
+
+    // Color: hot+low omission = red, cold+high omission = purple/gray
+    function dotColor(x, y) {
+        const heatRatio = x / maxFreq;
+        const coldRatio = y / maxOmission;
+        if (coldRatio > 0.6) return 'rgba(124,58,237,0.85)';  // very cold - purple warning
+        if (heatRatio > 0.7) return 'rgba(220,38,38,0.85)';   // very hot - red
+        return 'rgba(100,116,139,0.6)';                         // normal - gray
+    }
+
+    chartInstances['scatterChart'] = new Chart(chartEl, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: '红球分布',
+                data: scatterData,
+                backgroundColor: scatterData.map(d => dotColor(d.x, d.y)),
+                pointRadius: 8,
+                pointHoverRadius: 12
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15,23,42,0.9)',
+                    callbacks: {
+                        label: ctx => {
+                            const d = ctx.raw;
+                            return [`${d.label} 号`, `出现: ${d.x} 次`, `遗漏: ${d.y} 期`];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { title: { display: true, text: '→ 出现频次 (越大越热)' }, beginAtZero: true },
+                y: { title: { display: true, text: '遗漏期数 (越高越冷)' }, beginAtZero: true }
+            }
+        },
+        plugins: [{
+            id: 'labelPlugin',
+            afterDatasetDraw(chart) {
+                const ctx = chart.ctx;
+                chart.data.datasets[0].data.forEach((d, i) => {
+                    const meta = chart.getDatasetMeta(0);
+                    const pt = meta.data[i];
+                    if (!pt) return;
+                    ctx.save();
+                    ctx.fillStyle = '#1e293b';
+                    ctx.font = '600 9px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(d.label, pt.x, pt.y - 11);
+                    ctx.restore();
+                });
+            }
+        }]
+    });
+}
+
 function renderAllAnalysisCharts() {
     renderStatisticsCards();
+    renderOmissionPanel();
     renderFrequencyChart();
     renderBlueFrequencyChart();
     renderOddEvenChart();
     renderSumTrendChart();
     renderZoneDistributionChart();
+    renderScatterChart();
 }
 
 // 设置事件监听

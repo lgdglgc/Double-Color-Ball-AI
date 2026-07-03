@@ -233,22 +233,40 @@
                     </div>
                 </div>
 
+                <!-- Omission Alert Panel -->
+                <div id="omissionPanel" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%); border: 1px solid #fcd34d; border-radius: 12px; padding: 1.25rem;">
+                        <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #d97706; margin-bottom: 0.75rem;">&#x2603;&#xfe0f; 极冷红球 Top 5 遗漏预警</div>
+                        <div id="redOmissionRanking" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 12px; padding: 1.25rem;">
+                        <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; margin-bottom: 0.75rem;">&#x2603;&#xfe0f; 蓝球遗漏 Top 5</div>
+                        <div id="blueOmissionRanking" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+                    </div>
+                </div>
+
                 <!-- Charts Grid -->
                 <div class="analysis-charts-grid">
-                    <!-- Red Ball Frequency Chart -->
-                    <div class="chart-container">
-                        <div class="chart-header">
+                    <!-- Red Ball Frequency Chart with sort controls -->
+                    <div class="chart-container full-width">
+                        <div class="chart-header" style="flex-wrap: wrap; gap: 0.75rem;">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/>
                                 </svg>
                             </div>
-                            <div class="chart-title-wrapper">
-                                <h3>红球热度分布</h3>
-                                <p class="chart-description">各号码出现频次统计</p>
+                            <div class="chart-title-wrapper" style="flex: 1;">
+                                <h3>红球热度分布 · 遒漏复合图</h3>
+                                <p class="chart-description">热力渐变色柱 + 遒漏期数展示，悬停可查详细数据</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span style="font-size: 0.75rem; color: var(--slate-500);">排序：</span>
+                                <button class="sort-btn active" id="sortByNumber" onclick="setSortMode('number')">号码</button>
+                                <button class="sort-btn" id="sortByFreq" onclick="setSortMode('freq')">频次</button>
+                                <button class="sort-btn" id="sortByOmission" onclick="setSortMode('omission')">遒漏</button>
                             </div>
                         </div>
-                        <div class="chart-canvas">
+                        <div class="chart-canvas" style="height: 280px;">
                             <canvas id="frequencyChart"></canvas>
                         </div>
                     </div>
@@ -299,11 +317,29 @@
                             </div>
                             <div class="chart-title-wrapper">
                                 <h3>红球和值走势</h3>
-                                <p class="chart-description">近期红球总和变化趋势</p>
+                                <p class="chart-description">近期红球总和变化趋势（带平均参考线）</p>
                             </div>
                         </div>
                         <div class="chart-canvas">
                             <canvas id="sumTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Scatter Chart: Freq vs Omission -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="7.5" cy="7.5" r="1.5"/><circle cx="18.5" cy="5.5" r="1.5"/><circle cx="11.5" cy="11.5" r="1.5"/><circle cx="14.5" cy="17.5" r="1.5"/><circle cx="5.5" cy="17.5" r="1.5"/>
+                                </svg>
+                            </div>
+                            <div class="chart-title-wrapper">
+                                <h3>频率 vs 遒漏散点图</h3>
+                                <p class="chart-description">右下角=热且刚出，左上角=冷且遥添将反弹</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas">
+                            <canvas id="scatterChart"></canvas>
                         </div>
                     </div>
 
