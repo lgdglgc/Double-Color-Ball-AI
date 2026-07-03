@@ -23,7 +23,7 @@ if not API_KEY:
 MODELS = [
     {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "GPT-120B-OSS"},
     {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
-    {"id": "gemini-3.1-pro-high", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
+    {"id": "gemini-3-pro-high", "name": "Gemini 3 Pro", "model_id": "Gemini-3-Pro"},
     {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"}
 ]
 
@@ -127,7 +127,8 @@ def call_ai_model(client: OpenAI, model_config: Dict[str, str], prompt: str) -> 
                     "content": prompt
                 }
             ],
-            temperature=0.8
+            temperature=0.8,
+            max_tokens=4096
         )
 
         response_text = response.choices[0].message.content.strip()
