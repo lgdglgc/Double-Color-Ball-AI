@@ -56,7 +56,7 @@ html {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
-                 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+        'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
     background: var(--slate-50);
     color: var(--foreground);
     line-height: 1.6;
@@ -135,7 +135,9 @@ body::after {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-text {
@@ -368,8 +370,15 @@ body::after {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ==================== Hero Banner (Ticket Style) ==================== */
@@ -422,8 +431,15 @@ body::after {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .hero-banner-content {
@@ -717,7 +733,7 @@ body::after {
 
 @media (min-width: 1024px) {
     .models-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -1637,7 +1653,8 @@ body::after {
     align-items: center;
     gap: 1rem;
     margin-bottom: 2rem;
-    grid-column: 1 / -1; /* 跨越所有列 */
+    grid-column: 1 / -1;
+    /* 跨越所有列 */
     animation: slideIn 0.5s ease;
 }
 
@@ -1646,6 +1663,7 @@ body::after {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1734,9 +1752,12 @@ body::after {
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
     }
+
     50% {
         box-shadow: 0 4px 8px rgba(251, 191, 36, 0.5);
     }
