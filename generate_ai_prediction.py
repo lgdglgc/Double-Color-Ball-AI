@@ -22,7 +22,6 @@ if not API_KEY:
 # 模型配置列表
 MODELS = [
     {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "GPT-120B-OSS"},
-    {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
     {"id": "gemini-3.1-pro-low", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
     {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"}
 ]
