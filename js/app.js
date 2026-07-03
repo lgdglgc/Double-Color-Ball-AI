@@ -122,52 +122,83 @@ function renderAggregateCard(actualResult) {
     const aggregateCardEl = document.getElementById('aggregateCard');
     if (!aggregateCardEl) return;
 
-    let standardReds = [];
-    let standardBlue = "";
-    let danReds = [];
-    let tuoReds = [];
-    let multipleBlues = [];
+    const redFreq = {};
+    const blueFreq = {};
     let analysisReasoning = null;
 
-    if (appData.aiPredictions.meta_prediction) {
-        // 使用超级裁判 AI 的终极汇总结果
-        const meta = appData.aiPredictions.meta_prediction;
-        standardReds = meta.standard_prediction.red_balls;
-        standardBlue = meta.standard_prediction.blue_ball;
-        danReds = meta.dantuo_prediction.dan_reds;
-        tuoReds = meta.dantuo_prediction.tuo_reds;
-        multipleBlues = meta.dantuo_prediction.blue_balls;
-        analysisReasoning = meta.analysis_reasoning;
-    } else {
-        // 向下兼容：如果没有 meta_prediction，回退到原始的数学频率统计
-        const redFreq = {};
-        const blueFreq = {};
-
-        appData.aiPredictions.models.forEach(model => {
-            model.predictions.forEach(prediction => {
-                prediction.red_balls.forEach(ball => {
-                    redFreq[ball] = (redFreq[ball] || 0) + 1;
-                });
-                blueFreq[prediction.blue_ball] = (blueFreq[prediction.blue_ball] || 0) + 1;
+    // 统计所有模型的词频作为号码池
+    appData.aiPredictions.models.forEach(model => {
+        model.predictions.forEach(prediction => {
+            prediction.red_balls.forEach(ball => {
+                redFreq[ball] = (redFreq[ball] || 0) + 1;
             });
+            blueFreq[prediction.blue_ball] = (blueFreq[prediction.blue_ball] || 0) + 1;
         });
+    });
 
-        const sortedReds = Object.entries(redFreq).sort((a, b) => b[1] - a[1]).map(item => item[0]);
-        const sortedBlues = Object.entries(blueFreq).sort((a, b) => b[1] - a[1]).map(item => item[0]);
+    const sortedReds = Object.entries(redFreq).sort((a, b) => b[1] - a[1]).map(item => item[0]);
+    const sortedBlues = Object.entries(blueFreq).sort((a, b) => b[1] - a[1]).map(item => item[0]);
+    
+    // 安全获取元素的辅助函数
+    const safeGetRed = (index) => sortedReds[index % sortedReds.length] || "01";
+    const safeGetBlue = (index) => sortedBlues[index % sortedBlues.length] || "01";
 
-        standardReds = sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b));
-        standardBlue = sortedBlues[0];
-        danReds = sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b));
-        tuoReds = sortedReds.slice(4, 7).sort((a, b) => parseInt(a) - parseInt(b));
-        multipleBlues = sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b));
+    let fiveSingleBets = [
+        { reds: sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(0) },
+        { reds: [safeGetRed(0), safeGetRed(1), safeGetRed(2), safeGetRed(6), safeGetRed(7), safeGetRed(8)].sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(1) },
+        { reds: [safeGetRed(1), safeGetRed(3), safeGetRed(5), safeGetRed(7), safeGetRed(9), safeGetRed(10)].sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(0) },
+        { reds: [safeGetRed(2), safeGetRed(4), safeGetRed(6), safeGetRed(8), safeGetRed(10), safeGetRed(11)].sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(1) },
+        { reds: [safeGetRed(0), safeGetRed(3), safeGetRed(6), safeGetRed(9), safeGetRed(12), safeGetRed(13)].sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(2) }
+    ];
+
+    let compound8_2 = {
+        reds: sortedReds.slice(0, 8).sort((a, b) => parseInt(a) - parseInt(b)),
+        blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
+    };
+
+    let dantuo4_4_2 = {
+        dan: sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b)),
+        tuo: sortedReds.slice(4, 8).sort((a, b) => parseInt(a) - parseInt(b)),
+        blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
+    };
+
+    if (appData.aiPredictions.meta_prediction) {
+        const meta = appData.aiPredictions.meta_prediction;
+        analysisReasoning = meta.analysis_reasoning;
+        
+        // 替换第一注为 meta 的标准预测
+        fiveSingleBets[0] = {
+            reds: meta.standard_prediction.red_balls,
+            blue: meta.standard_prediction.blue_ball
+        };
+        
+        // 使用 meta 的胆拖，如果拖码不够 4 个，补齐
+        let metaDan = meta.dantuo_prediction.dan_reds;
+        let metaTuo = meta.dantuo_prediction.tuo_reds;
+        while (metaTuo.length < 4) {
+            let nextRed = sortedReds.find(r => !metaDan.includes(r) && !metaTuo.includes(r));
+            if (nextRed) metaTuo.push(nextRed);
+            else break;
+        }
+        
+        dantuo4_4_2 = {
+            dan: metaDan,
+            tuo: metaTuo.sort((a, b) => parseInt(a) - parseInt(b)),
+            blues: meta.dantuo_prediction.blue_balls
+        };
     }
 
     // 构建号码字符串用于复制
-    const copyText = `双色球第 ${appData.aiPredictions.target_period} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n\n【常规单式】\n红球: ${standardReds.join(' ')} | 蓝球: ${standardBlue}\n\n【4胆3拖2蓝】(6注12元)\n红胆: ${danReds.join(' ')}\n红拖: ${tuoReds.join(' ')}\n蓝球: ${multipleBlues.join(' ')}`;
+    let copyText = `双色球第 ${appData.aiPredictions.target_period} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n\n`;
+    copyText += `【精选5注单式】(10元)\n`;
+    fiveSingleBets.forEach((bet, idx) => {
+        copyText += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
+    });
+    copyText += `\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
+    copyText += `\n【4胆4拖2蓝】(8注16元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}`;
 
     aggregateCardEl.style.display = 'block';
     
-    // 计算命中（如果已开奖）
     const actualReds = actualResult ? actualResult.red_balls : [];
     const actualBlue = actualResult ? actualResult.blue_ball : null;
 
@@ -200,14 +231,20 @@ function renderAggregateCard(actualResult) {
         ` : ''}
         <div class="aggregate-content">
             <div class="aggregate-section">
-                <div class="aggregate-section-title">【常规单式】</div>
-                <div class="strategy-row" style="padding: 0;">
-                    <div class="strategy-balls" id="standardBallsContainer"></div>
+                <div class="aggregate-section-title">【精选 5 注单式】(10元)</div>
+                <div class="strategy-row" style="padding: 0; flex-direction: column; gap: 1rem;" id="fiveSingleContainer">
                 </div>
             </div>
             
             <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div class="aggregate-section-title">【4胆3拖2蓝】(6注12元)</div>
+                <div class="aggregate-section-title">【8+2 经济小复式】(56注112元)</div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="compound82Container" style="flex-wrap: wrap; gap: 0.5rem 0.25rem;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div class="aggregate-section-title">【4胆4拖2蓝】(8注16元)</div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuoBallsContainer" style="flex-wrap: wrap; gap: 0.5rem 0.25rem;"></div>
                 </div>
@@ -215,13 +252,40 @@ function renderAggregateCard(actualResult) {
         </div>
     `;
 
-    // 渲染常规单式球
-    const standardContainer = aggregateCardEl.querySelector('#standardBallsContainer');
-    standardReds.forEach(num => {
-        standardContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    // 渲染 5注单式
+    const fiveSingleContainer = aggregateCardEl.querySelector('#fiveSingleContainer');
+    fiveSingleBets.forEach((bet, idx) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.gap = '0.5rem';
+        row.style.flexWrap = 'wrap';
+        
+        const numLabel = document.createElement('div');
+        numLabel.style.fontSize = '0.85rem';
+        numLabel.style.color = 'var(--text-secondary)';
+        numLabel.style.marginRight = '0.5rem';
+        numLabel.textContent = `第 ${idx + 1} 注`;
+        row.appendChild(numLabel);
+
+        bet.reds.forEach(num => {
+            row.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+        });
+        row.appendChild(Components.createBallDivider());
+        row.appendChild(Components.createLotteryBall(bet.blue, 'blue', 'md', actualBlue === bet.blue));
+        
+        fiveSingleContainer.appendChild(row);
     });
-    standardContainer.appendChild(Components.createBallDivider());
-    standardContainer.appendChild(Components.createLotteryBall(standardBlue, 'blue', 'md', actualBlue === standardBlue));
+
+    // 渲染 8+2 复式
+    const compoundContainer = aggregateCardEl.querySelector('#compound82Container');
+    compound8_2.reds.forEach(num => {
+        compoundContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    compoundContainer.appendChild(Components.createBallDivider());
+    compound8_2.blues.forEach(num => {
+        compoundContainer.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
+    });
 
     // 渲染胆拖复式球
     const dantuoContainer = aggregateCardEl.querySelector('#dantuoBallsContainer');
@@ -231,7 +295,7 @@ function renderAggregateCard(actualResult) {
     danLabel.textContent = '胆';
     dantuoContainer.appendChild(danLabel);
     
-    danReds.forEach(num => {
+    dantuo4_4_2.dan.forEach(num => {
         dantuoContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
     });
     
@@ -241,7 +305,7 @@ function renderAggregateCard(actualResult) {
     tuoLabel.textContent = '拖';
     dantuoContainer.appendChild(tuoLabel);
     
-    tuoReds.forEach(num => {
+    dantuo4_4_2.tuo.forEach(num => {
         dantuoContainer.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
     });
     
@@ -251,7 +315,7 @@ function renderAggregateCard(actualResult) {
     blueLabel.textContent = '蓝';
     dantuoContainer.appendChild(blueLabel);
     
-    multipleBlues.forEach(num => {
+    dantuo4_4_2.blues.forEach(num => {
         dantuoContainer.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
     });
 
