@@ -23,7 +23,7 @@ if not API_KEY:
 MODELS = [
     {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "GPT-120B-OSS"},
     {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
-    {"id": "gemini-3.1-pro", "name": "Gemini 1.5 Pro", "model_id": "Gemini-1.5-Pro"},
+    {"id": "gemini-3.1-pro", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
     {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"}
 ]
 
@@ -82,7 +82,8 @@ def get_next_draw_date() -> str:
 
 def get_openai_client() -> OpenAI:
     """获取 OpenAI 客户端"""
-    return OpenAI(api_key=API_KEY, base_url=BASE_URL)
+    # 添加 90 秒超时时间，防止个别模型 API 响应卡死导致整个 GitHub Actions 流程阻塞
+    return OpenAI(api_key=API_KEY, base_url=BASE_URL, timeout=90.0)
 
 def extract_json_from_response(response_text: str) -> str:
     """从 AI 响应中提取 JSON 内容"""
