@@ -3,6 +3,9 @@
  */
 
 // 全局状态
+let currentAnalysisPeriod = 30;
+let chartInstances = {};
+
 let appData = {
     lotteryHistory: null,
     aiPredictions: null,
@@ -655,51 +658,70 @@ function renderHistoryTable() {
 
 // 渲染频率图表 (分析标签页)
 function renderFrequencyChart() {
-    if (!appData.lotteryHistory) return;
-
+    const dataList = getFilteredLotteryData();
+    if (dataList.length === 0) return;
     const chartEl = document.getElementById('frequencyChart');
     if (!chartEl) return;
 
-    // 计算红球频率
-    const frequency = {};
-    for (let i = 1; i <= 33; i++) {
-        frequency[i.toString().padStart(2, '0')] = 0;
-    }
+    if (chartInstances['frequencyChart']) chartInstances['frequencyChart'].destroy();
 
-    appData.lotteryHistory.data.forEach(draw => {
-        draw.red_balls.forEach(ball => {
-            frequency[ball] = (frequency[ball] || 0) + 1;
-        });
+    const frequency = {};
+    for (let i = 1; i <= 33; i++) frequency[i.toString().padStart(2, '0')] = 0;
+    dataList.forEach(draw => {
+        draw.red_balls.forEach(ball => frequency[ball] = (frequency[ball] || 0) + 1);
     });
 
     const labels = Object.keys(frequency).sort();
     const data = labels.map(label => frequency[label]);
+    const maxFreq = Math.max(...data);
+    const minFreq = Math.min(...data);
+    const avg = data.reduce((a, b) => a + b, 0) / 33;
 
-    // 使用Chart.js渲染
-    new Chart(chartEl, {
+    // Colors
+    const backgroundColors = data.map(val => {
+        if (val === maxFreq) return '#dc2626'; // hot
+        if (val === minFreq) return '#94a3b8'; // cold
+        return '#fca5a5';
+    });
+
+    const omissions = calculateOmissions(appData.lotteryHistory.data, 'red');
+    const omissionData = labels.map(label => omissions[label]);
+
+    chartInstances['frequencyChart'] = new Chart(chartEl, {
         type: 'bar',
         data: {
             labels: labels,
-            datasets: [{
-                label: '出现次数',
-                data: data,
-                backgroundColor: '#fca5a5',
-                borderRadius: 4
-            }]
+            datasets: [
+                {
+                    type: 'line',
+                    label: '理论均值',
+                    data: Array(33).fill(avg),
+                    borderColor: '#94a3b8',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                },
+                {
+                    type: 'bar',
+                    label: '出现次数',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderRadius: 4
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+                tooltip: {
+                    callbacks: {
+                        afterLabel: function(context) {
+                            if (context.dataset.type === 'line') return null;
+                            const ball = context.label;
+                            return `当前遗漏: ${omissions[ball]} 期`;
+                        }
                     }
                 }
             }
@@ -708,104 +730,144 @@ function renderFrequencyChart() {
 }
 
 // 渲染统计卡片
+
+function getFilteredLotteryData() {
+    if (!appData.lotteryHistory || !appData.lotteryHistory.data) return [];
+    if (currentAnalysisPeriod === 'all') {
+        return appData.lotteryHistory.data;
+    }
+    const limit = parseInt(currentAnalysisPeriod, 10);
+    return appData.lotteryHistory.data.slice(0, limit);
+}
+
+// 计算遗漏值
+function calculateOmissions(data, type) {
+    const omissions = {};
+    const max = type === 'red' ? 33 : 16;
+    for (let i = 1; i <= max; i++) {
+        const ball = i.toString().padStart(2, '0');
+        let omission = 0;
+        for (let j = 0; j < data.length; j++) {
+            const draw = data[j];
+            if (type === 'red' && draw.red_balls.includes(ball)) {
+                break;
+            } else if (type === 'blue' && draw.blue_ball === ball) {
+                break;
+            }
+            omission++;
+        }
+        omissions[ball] = omission;
+    }
+    return omissions;
+}
+
+// 获取渐变颜色
+function getHeatColor(value, min, max, baseColor) {
+    if (max === min) return baseColor;
+    const ratio = (value - min) / (max - min);
+    // return color based on ratio. Simplified: return baseColor with opacity or a mix
+    // but Chart.js works well with rgba. For simplicity, just return different colors for top 3 and bottom 3
+    return baseColor;
+}
+
 function renderStatisticsCards() {
-    if (!appData.lotteryHistory) return;
+    const data = getFilteredLotteryData();
+    if (data.length === 0) return;
 
-    // 计算红球频率
     const redFrequency = {};
-    for (let i = 1; i <= 33; i++) {
-        redFrequency[i.toString().padStart(2, '0')] = 0;
-    }
-
-    // 计算蓝球频率
+    for (let i = 1; i <= 33; i++) redFrequency[i.toString().padStart(2, '0')] = 0;
     const blueFrequency = {};
-    for (let i = 1; i <= 16; i++) {
-        blueFrequency[i.toString().padStart(2, '0')] = 0;
-    }
+    for (let i = 1; i <= 16; i++) blueFrequency[i.toString().padStart(2, '0')] = 0;
 
-    // 计算和值
-    let totalSum = 0;
-
-    appData.lotteryHistory.data.forEach(draw => {
-        // 红球
-        draw.red_balls.forEach(ball => {
-            redFrequency[ball] = (redFrequency[ball] || 0) + 1;
-        });
-        // 蓝球
+    data.forEach(draw => {
+        draw.red_balls.forEach(ball => redFrequency[ball] = (redFrequency[ball] || 0) + 1);
         blueFrequency[draw.blue_ball] = (blueFrequency[draw.blue_ball] || 0) + 1;
-        // 和值
-        const sum = draw.red_balls.reduce((acc, ball) => acc + parseInt(ball), 0);
-        totalSum += sum;
     });
 
-    // 找出最热红球
     const hottestRed = Object.entries(redFrequency).sort((a, b) => b[1] - a[1])[0];
-
-    // 找出最热蓝球
     const hottestBlue = Object.entries(blueFrequency).sort((a, b) => b[1] - a[1])[0];
 
-    // 平均和值
-    const avgSum = Math.round(totalSum / appData.lotteryHistory.data.length);
+    // Find coldest red (max omission)
+    const redOmissions = calculateOmissions(appData.lotteryHistory.data, 'red'); // use all data for omission
+    const coldestRed = Object.entries(redOmissions).sort((a, b) => b[1] - a[1])[0];
 
-    // 更新UI
     const totalDrawsEl = document.getElementById('statTotalDraws');
-    if (totalDrawsEl) totalDrawsEl.textContent = `${appData.lotteryHistory.data.length} 期`;
+    if (totalDrawsEl) totalDrawsEl.textContent = currentAnalysisPeriod === 'all' ? `全部 (${data.length}期)` : `近 ${data.length} 期`;
 
     const hottestRedEl = document.getElementById('statHottestRed');
-    if (hottestRedEl) hottestRedEl.textContent = `${hottestRed[0]} (${hottestRed[1]}次)`;
+    if (hottestRedEl) hottestRedEl.innerHTML = `<strong>${hottestRed[0]}</strong> <span style="font-size:0.8em;color:var(--slate-500)">(${hottestRed[1]}次)</span>`;
 
     const hottestBlueEl = document.getElementById('statHottestBlue');
-    if (hottestBlueEl) hottestBlueEl.textContent = `${hottestBlue[0]} (${hottestBlue[1]}次)`;
+    if (hottestBlueEl) hottestBlueEl.innerHTML = `<strong>${hottestBlue[0]}</strong> <span style="font-size:0.8em;color:var(--slate-500)">(${hottestBlue[1]}次)</span>`;
 
-    const avgSumEl = document.getElementById('statAvgSum');
-    if (avgSumEl) avgSumEl.textContent = avgSum;
+    const coldestRedEl = document.getElementById('statColdestRed');
+    if (coldestRedEl) coldestRedEl.innerHTML = `<strong>${coldestRed[0]}</strong> <span style="font-size:0.8em;color:var(--slate-500)">(遗漏${coldestRed[1]}期)</span>`;
 }
 
 // 渲染蓝球频率图表
 function renderBlueFrequencyChart() {
-    if (!appData.lotteryHistory) return;
-
+    const dataList = getFilteredLotteryData();
+    if (dataList.length === 0) return;
     const chartEl = document.getElementById('blueFrequencyChart');
     if (!chartEl) return;
 
-    // 计算蓝球频率
-    const frequency = {};
-    for (let i = 1; i <= 16; i++) {
-        frequency[i.toString().padStart(2, '0')] = 0;
-    }
+    if (chartInstances['blueFrequencyChart']) chartInstances['blueFrequencyChart'].destroy();
 
-    appData.lotteryHistory.data.forEach(draw => {
+    const frequency = {};
+    for (let i = 1; i <= 16; i++) frequency[i.toString().padStart(2, '0')] = 0;
+    dataList.forEach(draw => {
         frequency[draw.blue_ball] = (frequency[draw.blue_ball] || 0) + 1;
     });
 
     const labels = Object.keys(frequency).sort();
     const data = labels.map(label => frequency[label]);
+    const maxFreq = Math.max(...data);
+    const minFreq = Math.min(...data);
+    const avg = dataList.length / 16;
 
-    // 使用Chart.js渲染
-    new Chart(chartEl, {
+    const backgroundColors = data.map(val => {
+        if (val === maxFreq) return '#2563eb';
+        if (val === minFreq) return '#94a3b8';
+        return '#93c5fd';
+    });
+
+    const omissions = calculateOmissions(appData.lotteryHistory.data, 'blue');
+
+    chartInstances['blueFrequencyChart'] = new Chart(chartEl, {
         type: 'bar',
         data: {
             labels: labels,
-            datasets: [{
-                label: '出现次数',
-                data: data,
-                backgroundColor: '#93c5fd',
-                borderRadius: 4
-            }]
+            datasets: [
+                {
+                    type: 'line',
+                    label: '理论均值',
+                    data: Array(16).fill(avg),
+                    borderColor: '#94a3b8',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                },
+                {
+                    type: 'bar',
+                    label: '出现次数',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderRadius: 4
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+                tooltip: {
+                    callbacks: {
+                        afterLabel: function(context) {
+                            if (context.dataset.type === 'line') return null;
+                            const ball = context.label;
+                            return `当前遗漏: ${omissions[ball]} 期`;
+                        }
                     }
                 }
             }
@@ -815,119 +877,87 @@ function renderBlueFrequencyChart() {
 
 // 渲染奇偶比图表
 function renderOddEvenChart() {
-    if (!appData.lotteryHistory) return;
-
+    const dataList = getFilteredLotteryData();
+    if (dataList.length === 0) return;
     const chartEl = document.getElementById('oddEvenChart');
     if (!chartEl) return;
 
-    // 计算奇偶比分布
-    const ratioCount = {};
+    if (chartInstances['oddEvenChart']) chartInstances['oddEvenChart'].destroy();
 
-    appData.lotteryHistory.data.forEach(draw => {
+    const ratioCount = {};
+    dataList.forEach(draw => {
         const oddCount = draw.red_balls.filter(ball => parseInt(ball) % 2 === 1).length;
         const evenCount = 6 - oddCount;
         const ratio = `${oddCount}:${evenCount}`;
         ratioCount[ratio] = (ratioCount[ratio] || 0) + 1;
     });
 
-    // 按常见比例排序
     const commonRatios = ['0:6', '1:5', '2:4', '3:3', '4:2', '5:1', '6:0'];
     const labels = commonRatios.filter(r => ratioCount[r]);
     const data = labels.map(label => ratioCount[label] || 0);
 
-    // 使用Chart.js渲染
-    new Chart(chartEl, {
+    chartInstances['oddEvenChart'] = new Chart(chartEl, {
         type: 'doughnut',
         data: {
-            labels: labels.map(l => `${l} (奇:偶)`),
+            labels: labels.map(l => l.replace(':', '奇')),
             datasets: [{
                 data: data,
-                backgroundColor: [
-                    '#ef4444', '#f97316', '#f59e0b',
-                    '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'
-                ],
-                borderWidth: 2,
-                borderColor: '#fff'
+                backgroundColor: ['#f87171', '#fb923c', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'],
+                borderWidth: 0
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 15,
-                        font: {
-                            size: 11
-                        }
-                    }
-                }
-            }
+            cutout: '65%'
         }
     });
 }
 
 // 渲染和值走势图表
 function renderSumTrendChart() {
-    if (!appData.lotteryHistory) return;
-
+    let recentDraws = getFilteredLotteryData();
+    if (recentDraws.length === 0) return;
     const chartEl = document.getElementById('sumTrendChart');
     if (!chartEl) return;
 
-    // 取最近30期
-    const recentDraws = appData.lotteryHistory.data.slice(0, 30).reverse();
+    if (chartInstances['sumTrendChart']) chartInstances['sumTrendChart'].destroy();
 
+    recentDraws = [...recentDraws].reverse();
     const labels = recentDraws.map(draw => draw.period);
-    const sums = recentDraws.map(draw =>
-        draw.red_balls.reduce((acc, ball) => acc + parseInt(ball), 0)
-    );
-
-    // 计算平均线
+    const sums = recentDraws.map(draw => draw.red_balls.reduce((acc, ball) => acc + parseInt(ball), 0));
     const avgSum = sums.reduce((a, b) => a + b, 0) / sums.length;
 
-    // 使用Chart.js渲染
-    new Chart(chartEl, {
+    chartInstances['sumTrendChart'] = new Chart(chartEl, {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [
-                {
-                    label: '红球和值',
-                    data: sums,
-                    borderColor: '#ef4444',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 7,
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: '平均值',
-                    data: Array(sums.length).fill(avgSum),
-                    borderColor: '#94a3b8',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    tension: 0
-                }
-            ]
+            datasets: [{
+                label: '红球和值',
+                data: sums,
+                borderColor: '#eab308',
+                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#eab308',
+                pointRadius: 3,
+                fill: true,
+                tension: 0.3
+            }, {
+                label: '均值',
+                data: Array(labels.length).fill(avgSum),
+                borderColor: '#94a3b8',
+                borderWidth: 1,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                fill: false
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    min: 60,
-                    max: 180
-                }
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
         }
     });
@@ -935,58 +965,37 @@ function renderSumTrendChart() {
 
 // 渲染区间分布图表
 function renderZoneDistributionChart() {
-    if (!appData.lotteryHistory) return;
-
+    const dataList = getFilteredLotteryData();
+    if (dataList.length === 0) return;
     const chartEl = document.getElementById('zoneDistributionChart');
     if (!chartEl) return;
 
-    // 计算区间分布 (01-11, 12-22, 23-33)
-    const zones = {
-        '01-11': 0,
-        '12-22': 0,
-        '23-33': 0
-    };
+    if (chartInstances['zoneDistributionChart']) chartInstances['zoneDistributionChart'].destroy();
 
-    appData.lotteryHistory.data.forEach(draw => {
+    const zones = { '01-11': 0, '12-22': 0, '23-33': 0 };
+    dataList.forEach(draw => {
         draw.red_balls.forEach(ball => {
             const num = parseInt(ball);
-            if (num >= 1 && num <= 11) zones['01-11']++;
-            else if (num >= 12 && num <= 22) zones['12-22']++;
-            else if (num >= 23 && num <= 33) zones['23-33']++;
+            if (num <= 11) zones['01-11']++;
+            else if (num <= 22) zones['12-22']++;
+            else zones['23-33']++;
         });
     });
 
-    const labels = Object.keys(zones);
-    const data = Object.values(zones);
-
-    // 使用Chart.js渲染
-    new Chart(chartEl, {
+    chartInstances['zoneDistributionChart'] = new Chart(chartEl, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: Object.keys(zones),
             datasets: [{
-                label: '出现次数',
-                data: data,
+                label: '落球数',
+                data: Object.values(zones),
                 backgroundColor: ['#fca5a5', '#93c5fd', '#d8b4fe'],
-                borderRadius: 8
+                borderRadius: 4
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 10
-                    }
-                }
-            }
+            maintainAspectRatio: false
         }
     });
 }
@@ -1003,6 +1012,14 @@ function renderAllAnalysisCharts() {
 
 // 设置事件监听
 function setupEventListeners() {
+    const periodSelect = document.getElementById('analysisPeriodSelect');
+    if (periodSelect) {
+        periodSelect.addEventListener('change', (e) => {
+            currentAnalysisPeriod = e.target.value;
+            renderAllAnalysisCharts();
+        });
+    }
+    
     // Tab切换 - 桌面端
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
