@@ -195,7 +195,7 @@ function renderAggregateCard(actualResult) {
         copyText += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
     });
     copyText += `\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
-    copyText += `\n【4胆4拖2蓝】(8注16元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}`;
+    copyText += `\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}`;
 
     aggregateCardEl.style.display = 'block';
     
@@ -244,7 +244,7 @@ function renderAggregateCard(actualResult) {
             </div>
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div class="aggregate-section-title">【4胆4拖2蓝】(8注16元)</div>
+                <div class="aggregate-section-title">【4胆4拖2蓝】(12注24元)</div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuoBallsContainer" style="align-items: center;"></div>
                 </div>
