@@ -156,6 +156,12 @@ function renderAggregateCard(actualResult) {
         blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
     };
 
+    let dantuo4_3_2 = {
+        dan: sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b)),
+        tuo: sortedReds.slice(4, 7).sort((a, b) => parseInt(a) - parseInt(b)),
+        blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
+    };
+
     let dantuo4_4_2 = {
         dan: sortedReds.slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b)),
         tuo: sortedReds.slice(4, 8).sort((a, b) => parseInt(a) - parseInt(b)),
@@ -174,7 +180,20 @@ function renderAggregateCard(actualResult) {
         
         // 使用 meta 的胆拖，如果拖码不够 4 个，补齐
         let metaDan = meta.dantuo_prediction.dan_reds;
-        let metaTuo = meta.dantuo_prediction.tuo_reds;
+        let metaTuo = [...meta.dantuo_prediction.tuo_reds];
+        
+        while (metaTuo.length < 3) {
+            let nextRed = sortedReds.find(r => !metaDan.includes(r) && !metaTuo.includes(r));
+            if (nextRed) metaTuo.push(nextRed);
+            else break;
+        }
+        
+        dantuo4_3_2 = {
+            dan: metaDan,
+            tuo: metaTuo.slice(0, 3).sort((a, b) => parseInt(a) - parseInt(b)),
+            blues: meta.dantuo_prediction.blue_balls
+        };
+
         while (metaTuo.length < 4) {
             let nextRed = sortedReds.find(r => !metaDan.includes(r) && !metaTuo.includes(r));
             if (nextRed) metaTuo.push(nextRed);
@@ -195,6 +214,7 @@ function renderAggregateCard(actualResult) {
         copyText += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
     });
     copyText += `\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
+    copyText += `\n【4胆3拖2蓝】(6注12元)\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}\n`;
     copyText += `\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}`;
 
     aggregateCardEl.style.display = 'block';
@@ -244,6 +264,13 @@ function renderAggregateCard(actualResult) {
             </div>
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div class="aggregate-section-title">【4胆3拖2蓝】(6注12元)</div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="dantuo432BallsContainer" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div class="aggregate-section-title">【4胆4拖2蓝】(12注24元)</div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuoBallsContainer" style="align-items: center;"></div>
@@ -287,6 +314,38 @@ function renderAggregateCard(actualResult) {
     compoundContainer.appendChild(Components.createBallDivider());
     compound8_2.blues.forEach(num => {
         compoundContainer.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
+    });
+
+    // 渲染4胆3拖2蓝
+    const dantuo432Container = aggregateCardEl.querySelector('#dantuo432BallsContainer');
+    
+    const danLabel432 = document.createElement('span');
+    danLabel432.className = 'ball-label red-label';
+    danLabel432.textContent = '胆';
+    dantuo432Container.appendChild(danLabel432);
+    
+    dantuo4_3_2.dan.forEach(num => {
+        dantuo432Container.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    
+    const tuoLabel432 = document.createElement('span');
+    tuoLabel432.className = 'ball-label red-label';
+    tuoLabel432.style.marginLeft = '0.5rem';
+    tuoLabel432.textContent = '拖';
+    dantuo432Container.appendChild(tuoLabel432);
+    
+    dantuo4_3_2.tuo.forEach(num => {
+        dantuo432Container.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    
+    const blueLabel432 = document.createElement('span');
+    blueLabel432.className = 'ball-label blue-label';
+    blueLabel432.style.marginLeft = '0.5rem';
+    blueLabel432.textContent = '蓝';
+    dantuo432Container.appendChild(blueLabel432);
+    
+    dantuo4_3_2.blues.forEach(num => {
+        dantuo432Container.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
     });
 
     // 渲染胆拖复式球
