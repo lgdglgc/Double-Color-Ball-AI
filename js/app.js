@@ -204,6 +204,25 @@ function renderAggregateCard(actualResult) {
         blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
     };
 
+    // 7+2 复式 (42注84元)
+    let compound7_2 = {
+        reds: sortedReds.slice(0, 7).sort((a, b) => parseInt(a) - parseInt(b)),
+        blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
+    };
+
+    // 5胆2拖2蓝 (4注8元)
+    let dantuo5_2_2 = {
+        dan: sortedReds.slice(0, 5).sort((a, b) => parseInt(a) - parseInt(b)),
+        tuo: sortedReds.slice(5, 7).sort((a, b) => parseInt(a) - parseInt(b)),
+        blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
+    };
+
+    // 6+3 蓝球复式 (3注6元)
+    let compound6_3 = {
+        reds: sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b)),
+        blues: sortedBlues.slice(0, 3).sort((a, b) => parseInt(a) - parseInt(b))
+    };
+
     if (appData.aiPredictions.meta_prediction) {
         const meta = appData.aiPredictions.meta_prediction;
         analysisReasoning = meta.analysis_reasoning;
@@ -241,6 +260,21 @@ function renderAggregateCard(actualResult) {
             tuo: metaTuo.sort((a, b) => parseInt(a) - parseInt(b)),
             blues: meta.dantuo_prediction.blue_balls
         };
+
+        // Also update derived combos from meta
+        compound7_2 = {
+            reds: [...new Set([...metaDan, ...metaTuo])].slice(0, 7).sort((a, b) => parseInt(a) - parseInt(b)),
+            blues: meta.dantuo_prediction.blue_balls
+        };
+        dantuo5_2_2 = {
+            dan: metaDan.slice(0, 5),
+            tuo: metaTuo.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b)),
+            blues: meta.dantuo_prediction.blue_balls
+        };
+        compound6_3 = {
+            reds: meta.standard_prediction.red_balls,
+            blues: [...sortedBlues.slice(0, 3)].sort((a, b) => parseInt(a) - parseInt(b))
+        };
     }
 
     // 构建号码字符串用于复制
@@ -257,7 +291,13 @@ function renderAggregateCard(actualResult) {
 
     let copyText442 = `${headerText}\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}\n`;
 
-    let copyText = copyTextSingle + '\n' + copyText82 + '\n' + copyText432 + '\n' + copyText442;
+    let copyText72 = `${headerText}\n【7+2 经济复式】(42注84元)\n红球: ${compound7_2.reds.join(' ')}\n蓝球: ${compound7_2.blues.join(' ')}\n`;
+
+    let copyText522 = `${headerText}\n【5胆2拖2蓝】(4注8元)\n红胆: ${dantuo5_2_2.dan.join(' ')}\n红拖: ${dantuo5_2_2.tuo.join(' ')}\n蓝球: ${dantuo5_2_2.blues.join(' ')}\n`;
+
+    let copyText63 = `${headerText}\n【6+3 蓝球复式】(3注6元)\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}\n`;
+
+    let copyText = copyTextSingle + '\n' + copyText82 + '\n' + copyText432 + '\n' + copyText442 + '\n' + copyText72 + '\n' + copyText522 + '\n' + copyText63;
     copyText = copyText.trim();
 
     aggregateCardEl.style.display = 'block';
@@ -337,6 +377,42 @@ function renderAggregateCard(actualResult) {
                 </div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuoBallsContainer" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【7+2 经济复式】(42注84元)</div>
+                    <button class="section-copy-btn" data-text-id="copy72">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="compound72Container" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【5胆2拖2蓝】(4注8元)</div>
+                    <button class="section-copy-btn" data-text-id="copy522">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="dantuo522Container" style="align-items: center;"></div>
+                </div>
+            </div>
+
+            <div class="aggregate-section" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【6+3 蓝球复式】(3注6元)</div>
+                    <button class="section-copy-btn" data-text-id="copy63">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
+                <div class="strategy-row" style="padding: 0;">
+                    <div class="strategy-balls" id="compound63Container" style="align-items: center;"></div>
                 </div>
             </div>
         </div>
@@ -443,6 +519,52 @@ function renderAggregateCard(actualResult) {
         dantuoContainer.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
     });
 
+    // 渲染 7+2 复式
+    const compound72Container = aggregateCardEl.querySelector('#compound72Container');
+    compound7_2.reds.forEach(num => {
+        compound72Container.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    compound72Container.appendChild(Components.createBallDivider());
+    compound7_2.blues.forEach(num => {
+        compound72Container.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
+    });
+
+    // 渲染 5胆2拖2蓝
+    const dantuo522Container = aggregateCardEl.querySelector('#dantuo522Container');
+    const danLabel522 = document.createElement('span');
+    danLabel522.className = 'ball-label red-label';
+    danLabel522.textContent = '胆';
+    dantuo522Container.appendChild(danLabel522);
+    dantuo5_2_2.dan.forEach(num => {
+        dantuo522Container.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    const tuoLabel522 = document.createElement('span');
+    tuoLabel522.className = 'ball-label red-label';
+    tuoLabel522.style.marginLeft = '0.5rem';
+    tuoLabel522.textContent = '拖';
+    dantuo522Container.appendChild(tuoLabel522);
+    dantuo5_2_2.tuo.forEach(num => {
+        dantuo522Container.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    const blueLabel522 = document.createElement('span');
+    blueLabel522.className = 'ball-label blue-label';
+    blueLabel522.style.marginLeft = '0.5rem';
+    blueLabel522.textContent = '蓝';
+    dantuo522Container.appendChild(blueLabel522);
+    dantuo5_2_2.blues.forEach(num => {
+        dantuo522Container.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
+    });
+
+    // 渲染 6+3 蓝球复式
+    const compound63Container = aggregateCardEl.querySelector('#compound63Container');
+    compound6_3.reds.forEach(num => {
+        compound63Container.appendChild(Components.createLotteryBall(num, 'red', 'md', actualReds.includes(num)));
+    });
+    compound63Container.appendChild(Components.createBallDivider());
+    compound6_3.blues.forEach(num => {
+        compound63Container.appendChild(Components.createLotteryBall(num, 'blue', 'md', actualBlue === num));
+    });
+
     // 绑定复制按钮事件
     const copyBtn = aggregateCardEl.querySelector('#copyAggregateBtn');
     copyBtn.addEventListener('click', () => {
@@ -470,7 +592,10 @@ function renderAggregateCard(actualResult) {
         'copySingle': copyTextSingle.trim(),
         'copy82': copyText82.trim(),
         'copy432': copyText432.trim(),
-        'copy442': copyText442.trim()
+        'copy442': copyText442.trim(),
+        'copy72': copyText72.trim(),
+        'copy522': copyText522.trim(),
+        'copy63': copyText63.trim()
     };
     aggregateCardEl.querySelectorAll('.section-copy-btn').forEach(btn => {
         btn.addEventListener('click', () => {
