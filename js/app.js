@@ -232,21 +232,21 @@ function renderAggregateCard(actualResult) {
         <div class="aggregate-content">
             <div class="aggregate-section">
                 <div class="aggregate-section-title">【精选 5 注单式】(10元)</div>
-                <div class="strategy-row" style="padding: 0; flex-direction: column; gap: 1rem;" id="fiveSingleContainer">
+                <div class="strategy-row" style="padding: 0; flex-direction: column; gap: 0.25rem;" id="fiveSingleContainer">
                 </div>
             </div>
             
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div class="aggregate-section-title">【8+2 经济小复式】(56注112元)</div>
                 <div class="strategy-row" style="padding: 0;">
-                    <div class="strategy-balls" id="compound82Container" style="flex-wrap: wrap; gap: 0.5rem 0.25rem;"></div>
+                    <div class="strategy-balls" id="compound82Container" style="align-items: center;"></div>
                 </div>
             </div>
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div class="aggregate-section-title">【4胆4拖2蓝】(8注16元)</div>
                 <div class="strategy-row" style="padding: 0;">
-                    <div class="strategy-balls" id="dantuoBallsContainer" style="flex-wrap: wrap; gap: 0.5rem 0.25rem;"></div>
+                    <div class="strategy-balls" id="dantuoBallsContainer" style="align-items: center;"></div>
                 </div>
             </div>
         </div>
@@ -256,16 +256,18 @@ function renderAggregateCard(actualResult) {
     const fiveSingleContainer = aggregateCardEl.querySelector('#fiveSingleContainer');
     fiveSingleBets.forEach((bet, idx) => {
         const row = document.createElement('div');
-        row.style.display = 'flex';
+        row.className = 'strategy-balls';
         row.style.alignItems = 'center';
-        row.style.gap = '0.5rem';
-        row.style.flexWrap = 'wrap';
+        row.style.marginBottom = '0.25rem';
+        row.style.paddingBottom = '0.5rem';
         
         const numLabel = document.createElement('div');
         numLabel.style.fontSize = '0.85rem';
         numLabel.style.color = 'var(--text-secondary)';
-        numLabel.style.marginRight = '0.5rem';
-        numLabel.textContent = `第 ${idx + 1} 注`;
+        numLabel.style.marginRight = '0.25rem';
+        numLabel.style.flexShrink = '0';
+        numLabel.style.fontWeight = '500';
+        numLabel.textContent = `第${idx + 1}注`;
         row.appendChild(numLabel);
 
         bet.reds.forEach(num => {
