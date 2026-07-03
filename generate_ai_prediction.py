@@ -82,8 +82,8 @@ def get_next_draw_date() -> str:
 
 def get_openai_client() -> OpenAI:
     """获取 OpenAI 客户端"""
-    # 添加 90 秒超时时间，防止个别模型 API 响应卡死导致整个 GitHub Actions 流程阻塞
-    return OpenAI(api_key=API_KEY, base_url=BASE_URL, timeout=90.0)
+    # 增加到 300 秒超时时间，防止大型模型 (如 GPT 120B) 在代理端排队或生成过慢导致超时
+    return OpenAI(api_key=API_KEY, base_url=BASE_URL, timeout=300.0)
 
 def extract_json_from_response(response_text: str) -> str:
     """从 AI 响应中提取 JSON 内容"""
