@@ -184,20 +184,25 @@ const Components = {
     },
 
     /**
-     * 创建准确度卡片 (历史预测对比)
-     * @param {Object} record - 历史记录
+     * 创建准确度卡片
+     * @param {Object} record - 历史记录数据
+     * @param {number} index - 索引，用于默认展开第一项
      * @returns {HTMLElement} 准确度卡片元素
      */
-    createAccuracyCard(record) {
+    createAccuracyCard(record, index = 0) {
         const card = document.createElement('div');
         card.className = 'accuracy-card';
+        // Add a random ID to the body for accessibility
+        const collapseId = 'collapse-' + Math.random().toString(36).substr(2, 9);
+        const isOpen = index === 0;
 
         const result = record.actual_result;
         if (!result) return card;
 
-        // 卡片头部
+        // 卡片头部 (可点击切换)
         const header = document.createElement('div');
         header.className = 'accuracy-card-header';
+        header.style.cursor = 'pointer';
         header.innerHTML = `
             <div class="accuracy-header-left">
                 <div class="accuracy-trophy-icon">
@@ -210,9 +215,19 @@ const Components = {
                     <span class="accuracy-header-subtitle">命中回溯报告</span>
                 </div>
             </div>
-            <span class="accuracy-header-date">${result.date}</span>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span class="accuracy-header-date">${result.date}</span>
+                <svg class="collapse-icon" style="width: 20px; height: 20px; color: var(--slate-400); transition: transform 0.3s; transform: ${isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m6 9 6 6 6-6"/>
+                </svg>
+            </div>
         `;
         card.appendChild(header);
+
+        // 可折叠内容区域
+        const bodyWrapper = document.createElement('div');
+        bodyWrapper.id = collapseId;
+        bodyWrapper.style.display = isOpen ? 'block' : 'none';
 
         // 实际开奖结果
         const actualSection = document.createElement('div');
@@ -233,7 +248,7 @@ const Components = {
         actualBalls.appendChild(this.createLotteryBall(result.blue_ball, 'blue', 'md'));
         actualSection.appendChild(actualBalls);
 
-        card.appendChild(actualSection);
+        bodyWrapper.appendChild(actualSection);
 
         // 模型命中列表
         const hitsList = document.createElement('div');
@@ -243,7 +258,21 @@ const Components = {
             hitsList.appendChild(this.createModelHitItem(model, index + 1, index === record.models.length - 1));
         });
 
-        card.appendChild(hitsList);
+        bodyWrapper.appendChild(hitsList);
+
+        card.appendChild(bodyWrapper);
+
+        // 添加点击切换事件
+        header.addEventListener('click', () => {
+            const isCurrentlyOpen = bodyWrapper.style.display === 'block';
+            bodyWrapper.style.display = isCurrentlyOpen ? 'none' : 'block';
+            
+            // 旋转图标
+            const icon = header.querySelector('.collapse-icon');
+            if (icon) {
+                icon.style.transform = isCurrentlyOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        });
 
         return card;
     },

@@ -598,8 +598,8 @@ function renderAccuracyCards() {
     containerEl.innerHTML = '';
 
     // 渲染每个记录
-    appData.predictionsHistory.predictions_history.forEach(record => {
-        const card = Components.createAccuracyCard(record);
+    appData.predictionsHistory.predictions_history.forEach((record, index) => {
+        const card = Components.createAccuracyCard(record, index);
         containerEl.appendChild(card);
     });
 }
