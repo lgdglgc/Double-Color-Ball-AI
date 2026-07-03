@@ -469,21 +469,21 @@ function renderAggregateCard(actualResult) {
         'copy442': copyText442.trim()
     };
     aggregateCardEl.querySelectorAll('.section-copy-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const copyId = e.currentTarget.getAttribute('data-text-id');
+        btn.addEventListener('click', () => {
+            const copyId = btn.getAttribute('data-text-id');
             const textToCopy = copyTexts[copyId];
             copyTextToClipboard(textToCopy).then(() => {
-                const originalHtml = e.currentTarget.innerHTML;
-                e.currentTarget.innerHTML = `
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     已复制
                 `;
-                e.currentTarget.classList.add('copied');
+                btn.classList.add('copied');
                 setTimeout(() => {
-                    e.currentTarget.innerHTML = originalHtml;
-                    e.currentTarget.classList.remove('copied');
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
                 console.error('复制失败:', err);
