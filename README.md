@@ -146,5 +146,6 @@ vercel
 ---
 
 <p align="center">
-  Made with ❤️ | Powered by AI | 仅供娱乐与统计研究
+  Made with ❤️ | Powered by AI | 仅供娱乐与统计研究<br/>
+  <strong>Powered by 喀秋莎电玩</strong>
 </p>
