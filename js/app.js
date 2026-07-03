@@ -9,6 +9,41 @@ let appData = {
     predictionsHistory: null
 };
 
+// 复制文本辅助函数，兼容 HTTP 环境
+function fallbackCopyTextToClipboard(text) {
+    return new Promise((resolve, reject) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                resolve();
+            } else {
+                reject(new Error('Fallback copy failed'));
+            }
+        } catch (err) {
+            reject(err);
+        }
+        document.body.removeChild(textArea);
+    });
+}
+
+function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext !== false) {
+        return navigator.clipboard.writeText(text).catch(() => {
+            return fallbackCopyTextToClipboard(text);
+        });
+    } else {
+        return fallbackCopyTextToClipboard(text);
+    }
+}
+
 // 初始化应用
 async function initApp() {
     try {
@@ -410,7 +445,7 @@ function renderAggregateCard(actualResult) {
     // 绑定复制按钮事件
     const copyBtn = aggregateCardEl.querySelector('#copyAggregateBtn');
     copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(copyText).then(() => {
+        copyTextToClipboard(copyText).then(() => {
             const originalHtml = copyBtn.innerHTML;
             copyBtn.innerHTML = `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -440,7 +475,7 @@ function renderAggregateCard(actualResult) {
         btn.addEventListener('click', (e) => {
             const copyId = e.currentTarget.getAttribute('data-text-id');
             const textToCopy = copyTexts[copyId];
-            navigator.clipboard.writeText(textToCopy).then(() => {
+            copyTextToClipboard(textToCopy).then(() => {
                 const originalHtml = e.currentTarget.innerHTML;
                 e.currentTarget.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
