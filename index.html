@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>双色球 AI 预测</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/style.css?v=20251124c">
 </head>
+
 <body>
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
@@ -35,25 +38,36 @@
                     <div class="nav-items">
                         <button class="nav-item active" data-tab="prediction">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+                                <rect width="7" height="9" x="3" y="3" rx="1" />
+                                <rect width="7" height="5" x="14" y="3" rx="1" />
+                                <rect width="7" height="9" x="14" y="12" rx="1" />
+                                <rect width="7" height="5" x="3" y="16" rx="1" />
                             </svg>
                             最新预测
                         </button>
                         <button class="nav-item" data-tab="analysis">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/>
+                                <line x1="18" x2="18" y1="20" y2="10" />
+                                <line x1="12" x2="12" y1="20" y2="4" />
+                                <line x1="6" x2="6" y1="20" y2="14" />
                             </svg>
                             图表分析
                         </button>
                         <button class="nav-item" data-tab="history">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                <path d="M3 3v5h5" />
+                                <path d="M12 7v5l4 2" />
                             </svg>
                             历史回溯
                         </button>
                         <button class="nav-item" data-tab="lottery">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
                             </svg>
                             历史开奖
                         </button>
@@ -67,25 +81,36 @@
             <div class="mobile-nav-content">
                 <button class="mobile-nav-item active" data-tab="prediction">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+                        <rect width="7" height="9" x="3" y="3" rx="1" />
+                        <rect width="7" height="5" x="14" y="3" rx="1" />
+                        <rect width="7" height="9" x="14" y="12" rx="1" />
+                        <rect width="7" height="5" x="3" y="16" rx="1" />
                     </svg>
                     <span>最新预测</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="analysis">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/>
+                        <line x1="18" x2="18" y1="20" y2="10" />
+                        <line x1="12" x2="12" y1="20" y2="4" />
+                        <line x1="6" x2="6" y1="20" y2="14" />
                     </svg>
                     <span>图表分析</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="history">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                        <path d="M12 7v5l4 2" />
                     </svg>
                     <span>历史回溯</span>
                 </button>
                 <button class="mobile-nav-item" data-tab="lottery">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
                     </svg>
                     <span>历史开奖</span>
                 </button>
@@ -114,13 +139,17 @@
                                 <div class="hero-meta">
                                     <div class="hero-meta-item">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                                            <line x1="16" x2="16" y1="2" y2="6" />
+                                            <line x1="8" x2="8" y1="2" y2="6" />
+                                            <line x1="3" x2="21" y1="10" y2="10" />
                                         </svg>
                                         <span id="heroDateDisplay">-</span>
                                     </div>
                                     <div class="hero-meta-item">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                            <circle cx="12" cy="12" r="10" />
+                                            <polyline points="12 6 12 12 16 14" />
                                         </svg>
                                         <span id="heroDrawTime">21:15 开奖</span>
                                     </div>
@@ -139,12 +168,15 @@
                 <div class="info-card">
                     <div class="info-card-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+                            <path d="m22 2-7 20-4-9-9-4Z" />
+                            <path d="M22 2 11 13" />
                         </svg>
                     </div>
                     <div class="info-card-content">
                         <h3 class="info-card-title">本期 AI 策略说明</h3>
-                        <p>本期预测汇集了 GPT-5、Claude 4.5 等四大前沿模型的增强型策略。所有模型均基于近 30 期历史数据进行加权分析，重点融合了<span class="highlight-red">热号追随</span>、<span class="highlight-blue">冷号逆向</span>及周期理论，旨在捕捉号码的均值回归与趋势延续。</p>
+                        <p>本期预测汇集了 GPT-5、Claude 4.5 等四大前沿模型的增强型策略。所有模型均基于近 30 期历史数据进行加权分析，重点融合了<span
+                                class="highlight-red">热号追随</span>、<span
+                                class="highlight-blue">冷号逆向</span>及周期理论，旨在捕捉号码的均值回归与趋势延续。</p>
                     </div>
                 </div>
 
@@ -157,7 +189,9 @@
                 <!-- Disclaimer -->
                 <div class="disclaimer-card">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" x2="12" y1="8" y2="12" />
+                        <line x1="12" x2="12.01" y1="16" y2="16" />
                     </svg>
                     <span>AI 预测结果仅供参考，不代表最终开奖结果</span>
                 </div>
@@ -169,13 +203,15 @@
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <div class="section-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                                <path d="M3 3v18h18" />
+                                <path d="m19 9-5 5-4-4-3 3" />
                             </svg>
                         </div>
                         <h2 class="section-title" style="margin-bottom: 0;">数据趋势与遗漏分析</h2>
                     </div>
                     <div class="period-selector">
-                        <select id="analysisPeriodSelect" style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--slate-200); background: white; color: var(--slate-700); font-weight: 500; outline: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <select id="analysisPeriodSelect"
+                            style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--slate-200); background: white; color: var(--slate-700); font-weight: 500; outline: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <option value="30">近 30 期</option>
                             <option value="50">近 50 期</option>
                             <option value="100">近 100 期</option>
@@ -190,7 +226,8 @@
                     <div class="stat-card">
                         <div class="stat-card-icon red">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 6v6l4 2" />
                             </svg>
                         </div>
                         <div class="stat-card-content">
@@ -201,7 +238,8 @@
                     <div class="stat-card">
                         <div class="stat-card-icon blue">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                                <path d="M3 3v18h18" />
+                                <path d="m19 9-5 5-4-4-3 3" />
                             </svg>
                         </div>
                         <div class="stat-card-content">
@@ -212,7 +250,8 @@
                     <div class="stat-card">
                         <div class="stat-card-icon purple">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 3v18h18"/><path d="m7 15 5-5 5 5"/>
+                                <path d="M3 3v18h18" />
+                                <path d="m7 15 5-5 5 5" />
                             </svg>
                         </div>
                         <div class="stat-card-content">
@@ -221,9 +260,10 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-card-icon" style="background: rgba(100, 116, 139, 0.1); color: var(--slate-500);">
+                        <div class="stat-card-icon"
+                            style="background: rgba(100, 116, 139, 0.1); color: var(--slate-500);">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                             </svg>
                         </div>
                         <div class="stat-card-content">
@@ -234,13 +274,20 @@
                 </div>
 
                 <!-- Omission Alert Panel -->
-                <div id="omissionPanel" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%); border: 1px solid #fcd34d; border-radius: 12px; padding: 1.25rem;">
-                        <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #d97706; margin-bottom: 0.75rem;">&#x2603;&#xfe0f; 极冷红球 Top 5 遗漏预警</div>
+                <div id="omissionPanel"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div
+                        style="background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%); border: 1px solid #fcd34d; border-radius: 12px; padding: 1.25rem;">
+                        <div
+                            style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #d97706; margin-bottom: 0.75rem;">
+                            &#x2603;&#xfe0f; 极冷红球 Top 5 遗漏预警</div>
                         <div id="redOmissionRanking" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
                     </div>
-                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 12px; padding: 1.25rem;">
-                        <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; margin-bottom: 0.75rem;">&#x2603;&#xfe0f; 蓝球遗漏 Top 5</div>
+                    <div
+                        style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: 12px; padding: 1.25rem;">
+                        <div
+                            style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #2563eb; margin-bottom: 0.75rem;">
+                            &#x2603;&#xfe0f; 蓝球遗漏 Top 5</div>
                         <div id="blueOmissionRanking" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
                     </div>
                 </div>
@@ -252,7 +299,9 @@
                         <div class="chart-header" style="flex-wrap: wrap; gap: 0.75rem;">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/>
+                                    <line x1="18" x2="18" y1="20" y2="10" />
+                                    <line x1="12" x2="12" y1="20" y2="4" />
+                                    <line x1="6" x2="6" y1="20" y2="14" />
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper" style="flex: 1;">
@@ -261,9 +310,11 @@
                             </div>
                             <div style="display: flex; gap: 0.5rem; align-items: center;">
                                 <span style="font-size: 0.75rem; color: var(--slate-500);">排序：</span>
-                                <button class="sort-btn active" id="sortByNumber" onclick="setSortMode('number')">号码</button>
+                                <button class="sort-btn active" id="sortByNumber"
+                                    onclick="setSortMode('number')">号码</button>
                                 <button class="sort-btn" id="sortByFreq" onclick="setSortMode('freq')">频次</button>
-                                <button class="sort-btn" id="sortByOmission" onclick="setSortMode('omission')">遗漏</button>
+                                <button class="sort-btn" id="sortByOmission"
+                                    onclick="setSortMode('omission')">遗漏</button>
                             </div>
                         </div>
                         <div class="chart-canvas" style="height: 280px;">
@@ -276,7 +327,9 @@
                         <div class="chart-header">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" x2="12" y1="8" y2="12" />
+                                    <line x1="12" x2="12.01" y1="16" y2="16" />
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper">
@@ -294,7 +347,8 @@
                         <div class="chart-header">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                                    <path d="M22 12A10 10 0 0 0 12 2v10z" />
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper">
@@ -312,7 +366,8 @@
                         <div class="chart-header">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 3v18h18"/><polyline points="22 6 12 16 2 12"/>
+                                    <path d="M3 3v18h18" />
+                                    <polyline points="22 6 12 16 2 12" />
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper">
@@ -330,7 +385,11 @@
                         <div class="chart-header">
                             <div class="chart-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="7.5" cy="7.5" r="1.5"/><circle cx="18.5" cy="5.5" r="1.5"/><circle cx="11.5" cy="11.5" r="1.5"/><circle cx="14.5" cy="17.5" r="1.5"/><circle cx="5.5" cy="17.5" r="1.5"/>
+                                    <circle cx="7.5" cy="7.5" r="1.5" />
+                                    <circle cx="18.5" cy="5.5" r="1.5" />
+                                    <circle cx="11.5" cy="11.5" r="1.5" />
+                                    <circle cx="14.5" cy="17.5" r="1.5" />
+                                    <circle cx="5.5" cy="17.5" r="1.5" />
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper">
@@ -348,7 +407,12 @@
                         <div class="chart-header">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect width="8" height="4" x="2" y="2" rx="1"/><rect width="8" height="4" x="2" y="10" rx="1"/><rect width="8" height="4" x="2" y="18" rx="1"/><rect width="8" height="4" x="14" y="2" rx="1"/><rect width="8" height="4" x="14" y="10" rx="1"/><rect width="8" height="4" x="14" y="18" rx="1"/>
+                                    <rect width="8" height="4" x="2" y="2" rx="1" />
+                                    <rect width="8" height="4" x="2" y="10" rx="1" />
+                                    <rect width="8" height="4" x="2" y="18" rx="1" />
+                                    <rect width="8" height="4" x="14" y="2" rx="1" />
+                                    <rect width="8" height="4" x="14" y="10" rx="1" />
+                                    <rect width="8" height="4" x="14" y="18" rx="1" />
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper">
@@ -363,16 +427,25 @@
                 </div>
 
                 <!-- Prize Rules Card (Moved to bottom and made collapsible) -->
-                <details class="prize-rules-card" style="margin-top: 2rem; border: 1px solid var(--slate-200); border-radius: 12px; background: white;">
-                    <summary style="padding: 1rem 1.5rem; cursor: pointer; display: flex; align-items: center; font-weight: 600; color: var(--slate-700); list-style: none;">
+                <details class="prize-rules-card"
+                    style="margin-top: 2rem; border: 1px solid var(--slate-200); border-radius: 12px; background: white;">
+                    <summary
+                        style="padding: 1rem 1.5rem; cursor: pointer; display: flex; align-items: center; font-weight: 600; color: var(--slate-700); list-style: none;">
                         <div class="prize-rules-icon" style="margin-right: 0.75rem;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                                height="20">
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                                <path d="M4 22h16" />
+                                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                             </svg>
                         </div>
                         双色球玩法与中奖规则说明
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="margin-left: auto;" class="chevron-icon">
-                            <path d="m6 9 6 6 6-6"/>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"
+                            height="20" style="margin-left: auto;" class="chevron-icon">
+                            <path d="m6 9 6 6 6-6" />
                         </svg>
                     </summary>
                     <div class="prize-rules-content" style="border-top: 1px solid var(--slate-100); padding: 1.5rem;">
@@ -410,7 +483,9 @@
                         </div>
                         <div class="prize-rules-note">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4" />
+                                <path d="M12 8h.01" />
                             </svg>
                             <span>红球从 01-33 中选择 6 个号码，蓝球从 01-16 中选择 1 个号码。每周二、四、日晚 21:15 开奖。</span>
                         </div>
@@ -423,7 +498,9 @@
                 <div class="section-header">
                     <div class="section-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                            <path d="M12 7v5l4 2" />
                         </svg>
                     </div>
                     <h2 class="section-title">历史数据回溯</h2>
@@ -434,7 +511,8 @@
                     <div class="chart-header">
                         <div class="chart-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+                                <path d="m22 2-7 20-4-9-9-4Z" />
+                                <path d="M22 2 11 13" />
                             </svg>
                         </div>
                         <div class="chart-title-wrapper">
@@ -449,9 +527,11 @@
 
                 <!-- Accuracy Cards Container -->
                 <div class="history-section">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
                         <h3 style="font-weight: 700; color: var(--slate-700); font-size: 1.125rem;">详细命中记录</h3>
-                        <span style="font-size: 10px; font-weight: 700; padding: 0.25rem 0.75rem; background: var(--slate-100); color: var(--slate-500); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--slate-200);">
+                        <span
+                            style="font-size: 10px; font-weight: 700; padding: 0.25rem 0.75rem; background: var(--slate-100); color: var(--slate-500); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--slate-200);">
                             Verified Data
                         </span>
                     </div>
@@ -465,14 +545,19 @@
                 <div class="section-header">
                     <div class="section-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
                         </svg>
                     </div>
                     <h2 class="section-title">官方历史开奖</h2>
                 </div>
-                
+
                 <div class="history-section">
-                    <h3 style="font-weight: 700; color: var(--slate-700); font-size: 1.125rem; margin-bottom: 1rem;">历史开奖号码一览</h3>
+                    <h3 style="font-weight: 700; color: var(--slate-700); font-size: 1.125rem; margin-bottom: 1rem;">
+                        历史开奖号码一览</h3>
                     <div class="history-table-container">
                         <div class="history-table-scroll">
                             <table class="history-table">
@@ -507,24 +592,11 @@
     <script src="js/app.js?v=20251124c"></script>
 
     <!-- Customer Service Widget -->
-    <script 
-      data-host-id="1" 
-      data-auto-reg="true" 
-      data-login-token="" 
-      data-title="智能选号助手" 
-      data-logo="" 
-      data-theme-color="#3b82f6" 
-      data-close-width="54" 
-      data-close-height="54" 
-      data-open-width="380" 
-      data-open-height="680" 
-      data-welcome="欢迎使用双色球AI预测！🎉 <br>想交流选号心得，或功能建议，<br>欢迎加微信: lgdglgc89" 
-      data-popup-title="需要帮助？" 
-      data-popup-subtitle="交流建议与反馈，请点我！" 
-      data-popup-image="" 
-      data-popup-closable="true" 
-      src="https://chat.bimi.eu.org/widget.js" 
-      async 
-    ></script>
+    <script data-host-id="1" data-auto-reg="true" data-login-token="" data-title="智能选号助手" data-logo=""
+        data-theme-color="#3b82f6" data-close-width="54" data-close-height="54" data-open-width="380"
+        data-open-height="680" data-welcome="欢迎使用双色球AI预测！🎉 <br>想交流选号，或功能建议，<br>欢迎加微信: lgdglgc89"
+        data-popup-title="需要帮助？" data-popup-subtitle="交流建议与反馈，请点我！" data-popup-image="" data-popup-closable="true"
+        src="https://chat.bimi.eu.org/widget.js" async></script>
 </body>
+
 </html>
