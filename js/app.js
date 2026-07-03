@@ -208,14 +208,21 @@ function renderAggregateCard(actualResult) {
     }
 
     // 构建号码字符串用于复制
-    let copyText = `双色球第 ${appData.aiPredictions.target_period} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n\n`;
-    copyText += `【精选5注单式】(10元)\n`;
+    const headerText = `双色球第 ${appData.aiPredictions.target_period} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n`;
+    
+    let copyTextSingle = `${headerText}\n【精选5注单式】(10元)\n`;
     fiveSingleBets.forEach((bet, idx) => {
-        copyText += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
+        copyTextSingle += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
     });
-    copyText += `\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
-    copyText += `\n【4胆3拖2蓝】(6注12元)\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}\n`;
-    copyText += `\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}`;
+
+    let copyText82 = `${headerText}\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
+
+    let copyText432 = `${headerText}\n【4胆3拖2蓝】(6注12元)\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}\n`;
+
+    let copyText442 = `${headerText}\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}\n`;
+
+    let copyText = copyTextSingle + '\n' + copyText82 + '\n' + copyText432 + '\n' + copyText442;
+    copyText = copyText.trim();
 
     aggregateCardEl.style.display = 'block';
     
@@ -251,27 +258,47 @@ function renderAggregateCard(actualResult) {
         ` : ''}
         <div class="aggregate-content">
             <div class="aggregate-section">
-                <div class="aggregate-section-title">【精选 5 注单式】(10元)</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【精选 5 注单式】(10元)</div>
+                    <button class="section-copy-btn" data-text-id="copySingle" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
                 <div class="strategy-row" style="padding: 0; flex-direction: column; gap: 0.25rem;" id="fiveSingleContainer">
                 </div>
             </div>
             
             <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div class="aggregate-section-title">【8+2 经济小复式】(56注112元)</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【8+2 经济小复式】(56注112元)</div>
+                    <button class="section-copy-btn" data-text-id="copy82" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="compound82Container" style="align-items: center;"></div>
                 </div>
             </div>
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div class="aggregate-section-title">【4胆3拖2蓝】(6注12元)</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【4胆3拖2蓝】(6注12元)</div>
+                    <button class="section-copy-btn" data-text-id="copy432" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuo432BallsContainer" style="align-items: center;"></div>
                 </div>
             </div>
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
-                <div class="aggregate-section-title">【4胆4拖2蓝】(12注24元)</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【4胆4拖2蓝】(12注24元)</div>
+                    <button class="section-copy-btn" data-text-id="copy442" style="background: none; border: none; color: var(--blue-600); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem; border-radius: 0.25rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
+                    </button>
+                </div>
                 <div class="strategy-row" style="padding: 0;">
                     <div class="strategy-balls" id="dantuoBallsContainer" style="align-items: center;"></div>
                 </div>
@@ -399,6 +426,37 @@ function renderAggregateCard(actualResult) {
         }).catch(err => {
             console.error('复制失败:', err);
             alert('复制失败，请手动选择号码复制');
+        });
+    });
+
+    // 绑定分项复制按钮事件
+    const copyTexts = {
+        'copySingle': copyTextSingle.trim(),
+        'copy82': copyText82.trim(),
+        'copy432': copyText432.trim(),
+        'copy442': copyText442.trim()
+    };
+    aggregateCardEl.querySelectorAll('.section-copy-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const copyId = e.currentTarget.getAttribute('data-text-id');
+            const textToCopy = copyTexts[copyId];
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHtml = e.currentTarget.innerHTML;
+                e.currentTarget.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    已复制
+                `;
+                e.currentTarget.style.color = 'var(--emerald-600)';
+                setTimeout(() => {
+                    e.currentTarget.innerHTML = originalHtml;
+                    e.currentTarget.style.color = 'var(--blue-600)';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择号码复制');
+            });
         });
     });
 }
