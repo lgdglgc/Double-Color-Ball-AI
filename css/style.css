@@ -2103,3 +2103,19 @@ body::after {
         font-size: 0.7rem;
     }
 }
+
+/* Mobile Optimization for Official Draw Balls */
+@media (max-width: 420px) {
+    .actual-result-balls {
+        gap: 0.35rem;
+        flex-wrap: nowrap;
+    }
+    .actual-result-balls .lottery-ball.size-md {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+    }
+    .actual-result-balls .ball-divider {
+        margin: 0 0.25rem;
+    }
+}
