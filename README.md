@@ -64,6 +64,29 @@
 
 ---
 
+## 📁 项目结构
+
+```
+Double-Color-Ball-AI/
+├── index.html                     # 主页面
+├── css/
+│   └── style.css                  # 样式文件
+├── js/
+│   ├── app.js                     # 主应用逻辑
+│   ├── data-loader.js             # 数据加载
+│   └── components.js              # UI 组件
+├── data/
+│   ├── lottery_history.json       # 历史开奖数据
+│   ├── ai_predictions.json        # 最新 AI 预测
+│   └── predictions_history.json   # 预测历史记录
+├── fetch_history/                 # 数据爬取脚本
+├── prompts/                       # AI Prompt 模板
+├── generate_ai_prediction.py      # AI 预测自动生成脚本
+└── .github/workflows/             # GitHub Actions 自动化
+```
+
+---
+
 ## 🔄 自动化运行流程
 
 1.  **定时触发**：每周二、四、日晚上 21:40（双色球开奖结束后约 25 分钟）。
