@@ -45,6 +45,90 @@ function copyTextToClipboard(text) {
     }
 }
 
+// 全局封装安全加载
+async function safeLoad(loader) {
+    try {
+        return await loader();
+    } catch (err) {
+        console.error('数据加载失败:', err);
+        throw err;
+    }
+}
+
+// 倒计时定时器引用
+let countdownInterval = null;
+
+// 倒计时函数
+function renderCountdown(drawDateStr) {
+    const countdownEl = document.getElementById('heroCountdown');
+    if (!countdownEl) return;
+
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+
+    const updateCountdown = () => {
+        const drawTime = new Date(drawDateStr);
+        // 如果只有日期，通常双色球开奖是在当天晚上 21:15，我们补充具体时间以便高精倒计时
+        if (drawDateStr.indexOf(' ') === -1 && drawDateStr.indexOf('T') === -1) {
+            drawTime.setHours(21, 15, 0, 0);
+        }
+        const now = new Date();
+        const diff = drawTime - now;
+
+        if (diff <= 0) {
+            countdownEl.textContent = '即将开奖';
+            clearInterval(countdownInterval);
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        countdownEl.textContent = `距离开奖仅剩 ${days}天${hours}时${minutes}分`;
+    };
+
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 60000);
+}
+
+// 复制按钮封装函数
+function toggleCopyButton(btn) {
+    const originalHtml = btn.innerHTML;
+    const isSmallBtn = btn.classList.contains('section-copy-btn');
+    const width = isSmallBtn ? '14' : '16';
+    btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="${width}" height="${width}">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        ${isSmallBtn ? '已复制' : '已复制！'}
+    `;
+    btn.classList.add('copied');
+    setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('copied');
+    }, 2000);
+}
+
+// 复制文本构建函数
+function generateCopyText(analysisReasoning, targetPeriod, fiveSingleBets, compound8_2, compound7_2, compound6_3, dantuo5_2_2, dantuo4_3_2, dantuo4_4_2) {
+    const headerText = `双色球第 ${targetPeriod} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n`;
+    
+    let text = `${headerText}\n【精选5注单式】(10元)\n`;
+    fiveSingleBets.forEach((bet, idx) => {
+        text += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
+    });
+
+    text += `\n【6+3 蓝球复式】(3注6元)\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}\n`;
+    text += `\n【7+2 经济复式】(42注84元)\n红球: ${compound7_2.reds.join(' ')}\n蓝球: ${compound7_2.blues.join(' ')}\n`;
+    text += `\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
+    text += `\n【5胆2拖2蓝】(4注8元)\n红胆: ${dantuo5_2_2.dan.join(' ')}\n红拖: ${dantuo5_2_2.tuo.join(' ')}\n蓝球: ${dantuo5_2_2.blues.join(' ')}\n`;
+    text += `\n【4胆3拖2蓝】(6注12元)\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}\n`;
+    text += `\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}\n`;
+    return text.trim();
+}
+
 // 初始化应用
 async function initApp() {
     try {
@@ -71,9 +155,9 @@ async function initApp() {
 async function loadAllData() {
     try {
         const [lotteryHistory, aiPredictions, predictionsHistory] = await Promise.all([
-            DataLoader.loadLotteryHistory(),
-            DataLoader.loadPredictions(),
-            DataLoader.loadPredictionsHistory()
+            safeLoad(() => DataLoader.loadLotteryHistory()),
+            safeLoad(() => DataLoader.loadPredictions()),
+            safeLoad(() => DataLoader.loadPredictionsHistory())
         ]);
 
         appData.lotteryHistory = lotteryHistory;
@@ -107,12 +191,8 @@ function renderHeroBanner() {
     const heroPredictionDateEl = document.getElementById('heroPredictionDate');
     if (heroPredictionDateEl) heroPredictionDateEl.textContent = appData.aiPredictions.prediction_date;
 
-    // 倒计时 (可选功能)
-    const heroCountdownEl = document.getElementById('heroCountdown');
-    if (heroCountdownEl) {
-        const daysUntil = calculateDaysUntil(nextDraw.next_date);
-        heroCountdownEl.textContent = daysUntil > 0 ? `距离开奖仅剩 ${daysUntil} 天` : '即将开奖';
-    }
+    // 倒计时
+    renderCountdown(nextDraw.next_date);
 }
 
 // 渲染模型网格
@@ -179,6 +259,7 @@ function renderAggregateCard(actualResult) {
     const safeGetRed = (index) => sortedReds[index % sortedReds.length] || "01";
     const safeGetBlue = (index) => sortedBlues[index % sortedBlues.length] || "01";
 
+    // 1. 初始化默认值（无 Meta AI 时的降级方案）
     let fiveSingleBets = [
         { reds: sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(0) },
         { reds: [safeGetRed(0), safeGetRed(1), safeGetRed(2), safeGetRed(6), safeGetRed(7), safeGetRed(8)].sort((a, b) => parseInt(a) - parseInt(b)), blue: safeGetBlue(1) },
@@ -204,101 +285,115 @@ function renderAggregateCard(actualResult) {
         blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
     };
 
-    // 7+2 复式 (42注84元)
     let compound7_2 = {
         reds: sortedReds.slice(0, 7).sort((a, b) => parseInt(a) - parseInt(b)),
         blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
     };
 
-    // 5胆2拖2蓝 (4注8元)
     let dantuo5_2_2 = {
         dan: sortedReds.slice(0, 5).sort((a, b) => parseInt(a) - parseInt(b)),
         tuo: sortedReds.slice(5, 7).sort((a, b) => parseInt(a) - parseInt(b)),
         blues: sortedBlues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
     };
 
-    // 6+3 蓝球复式 (3注6元)
     let compound6_3 = {
         reds: sortedReds.slice(0, 6).sort((a, b) => parseInt(a) - parseInt(b)),
         blues: sortedBlues.slice(0, 3).sort((a, b) => parseInt(a) - parseInt(b))
     };
 
+    // 2. 如果存在 Meta AI（混合专家 MoE），则完全采用其核心生成号码，杜绝随意拼凑
     if (appData.aiPredictions.meta_prediction) {
         const meta = appData.aiPredictions.meta_prediction;
         analysisReasoning = meta.analysis_reasoning;
         
-        // 替换第一注为 meta 的标准预测
-        fiveSingleBets[0] = {
-            reds: meta.standard_prediction.red_balls,
-            blue: meta.standard_prediction.blue_ball
-        };
-        
-        // 使用 meta 的胆拖，如果拖码不够 4 个，补齐
-        let metaDan = meta.dantuo_prediction.dan_reds;
-        let metaTuo = [...meta.dantuo_prediction.tuo_reds];
-        
-        while (metaTuo.length < 3) {
-            let nextRed = sortedReds.find(r => !metaDan.includes(r) && !metaTuo.includes(r));
-            if (nextRed) metaTuo.push(nextRed);
-            else break;
+        // 2.1 5注单式：直接使用 Meta AI 推荐的 5 组独立高质量单式
+        if (meta.five_single_predictions && meta.five_single_predictions.length === 5) {
+            fiveSingleBets = meta.five_single_predictions.map(pred => ({
+                reds: [...pred.red_balls].sort((a, b) => parseInt(a) - parseInt(b)),
+                blue: pred.blue_ball
+            }));
+        } else if (meta.standard_prediction) {
+            // 兼容老版本格式
+            fiveSingleBets[0] = {
+                reds: [...meta.standard_prediction.red_balls].sort((a, b) => parseInt(a) - parseInt(b)),
+                blue: meta.standard_prediction.blue_ball
+            };
         }
         
-        dantuo4_3_2 = {
-            dan: metaDan,
-            tuo: metaTuo.slice(0, 3).sort((a, b) => parseInt(a) - parseInt(b)),
-            blues: meta.dantuo_prediction.blue_balls
-        };
-
-        while (metaTuo.length < 4) {
-            let nextRed = sortedReds.find(r => !metaDan.includes(r) && !metaTuo.includes(r));
-            if (nextRed) metaTuo.push(nextRed);
-            else break;
+        // 2.2 8+2 复式大底：直接读取 Meta AI 的 compound_prediction
+        if (meta.compound_prediction) {
+            compound8_2 = {
+                reds: [...meta.compound_prediction.red_balls].sort((a, b) => parseInt(a) - parseInt(b)),
+                blues: [...meta.compound_prediction.blue_balls].sort((a, b) => parseInt(a) - parseInt(b))
+            };
         }
-        
-        dantuo4_4_2 = {
-            dan: metaDan,
-            tuo: metaTuo.sort((a, b) => parseInt(a) - parseInt(b)),
-            blues: meta.dantuo_prediction.blue_balls
-        };
 
-        // Also update derived combos from meta
+        // 2.3 胆拖推荐：直接读取 Meta AI 的 dantuo_prediction (4胆+4拖+2蓝)
+        if (meta.dantuo_prediction) {
+            const metaDan = meta.dantuo_prediction.dan_reds;
+            const metaTuo = meta.dantuo_prediction.tuo_reds;
+            const metaBlues = meta.dantuo_prediction.blue_balls;
+
+            // 4胆3拖2蓝
+            dantuo4_3_2 = {
+                dan: [...metaDan].sort((a, b) => parseInt(a) - parseInt(b)),
+                tuo: [...metaTuo].slice(0, 3).sort((a, b) => parseInt(a) - parseInt(b)),
+                blues: [...metaBlues].sort((a, b) => parseInt(a) - parseInt(b))
+            };
+
+            // 4胆4拖2蓝
+            dantuo4_4_2 = {
+                dan: [...metaDan].sort((a, b) => parseInt(a) - parseInt(b)),
+                tuo: [...metaTuo].slice(0, 4).sort((a, b) => parseInt(a) - parseInt(b)),
+                blues: [...metaBlues].sort((a, b) => parseInt(a) - parseInt(b))
+            };
+
+            // 5胆2拖2蓝 (组合 meta 胆+拖 前5个为胆，后2个为拖)
+            const combinedReds = [...metaDan, ...metaTuo];
+            dantuo5_2_2 = {
+                dan: combinedReds.slice(0, 5).sort((a, b) => parseInt(a) - parseInt(b)),
+                tuo: combinedReds.slice(5, 7).sort((a, b) => parseInt(a) - parseInt(b)),
+                blues: [...metaBlues].sort((a, b) => parseInt(a) - parseInt(b))
+            };
+        }
+
+        // 2.4 从 Meta 衍生出的其他复式
+        // 7+2 复式：使用 8+2 大底的前 7 个红球和 2 个蓝球
         compound7_2 = {
-            reds: [...new Set([...metaDan, ...metaTuo])].slice(0, 7).sort((a, b) => parseInt(a) - parseInt(b)),
-            blues: meta.dantuo_prediction.blue_balls
+            reds: compound8_2.reds.slice(0, 7).sort((a, b) => parseInt(a) - parseInt(b)),
+            blues: compound8_2.blues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
         };
-        dantuo5_2_2 = {
-            dan: metaDan.slice(0, 5),
-            tuo: metaTuo.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b)),
-            blues: meta.dantuo_prediction.blue_balls
-        };
+
+        // 6+3 复式：使用第一注单式红球 + 所有模型推荐前3的蓝球
+        const standardReds = fiveSingleBets[0].reds;
+        const compoundBlues = [...new Set([...compound8_2.blues, ...sortedBlues])].slice(0, 3);
         compound6_3 = {
-            reds: meta.standard_prediction.red_balls,
-            blues: [...sortedBlues.slice(0, 3)].sort((a, b) => parseInt(a) - parseInt(b))
+            reds: [...standardReds].sort((a, b) => parseInt(a) - parseInt(b)),
+            blues: compoundBlues.sort((a, b) => parseInt(a) - parseInt(b))
         };
     }
 
-    // 构建号码字符串用于复制
-    const headerText = `双色球第 ${appData.aiPredictions.target_period} 期 ${analysisReasoning ? 'MetaAI超级裁判综合推荐' : '综合推荐'}\n`;
-    
-    let copyTextSingle = `${headerText}\n【精选5注单式】(10元)\n`;
-    fiveSingleBets.forEach((bet, idx) => {
-        copyTextSingle += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
-    });
+    // 绑定数据生成复制内容
+    const copyText = generateCopyText(
+        analysisReasoning, 
+        appData.aiPredictions.target_period, 
+        fiveSingleBets, 
+        compound8_2, 
+        compound7_2, 
+        compound6_3, 
+        dantuo5_2_2, 
+        dantuo4_3_2, 
+        dantuo4_4_2
+    );
 
-    let copyText82 = `${headerText}\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
-
-    let copyText432 = `${headerText}\n【4胆3拖2蓝】(6注12元)\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}\n`;
-
-    let copyText442 = `${headerText}\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}\n`;
-
-    let copyText72 = `${headerText}\n【7+2 经济复式】(42注84元)\n红球: ${compound7_2.reds.join(' ')}\n蓝球: ${compound7_2.blues.join(' ')}\n`;
-
-    let copyText522 = `${headerText}\n【5胆2拖2蓝】(4注8元)\n红胆: ${dantuo5_2_2.dan.join(' ')}\n红拖: ${dantuo5_2_2.tuo.join(' ')}\n蓝球: ${dantuo5_2_2.blues.join(' ')}\n`;
-
-    let copyText63 = `${headerText}\n【6+3 蓝球复式】(3注6元)\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}\n`;
-
-    let copyText = copyTextSingle + '\n' + copyText63 + '\n' + copyText72 + '\n' + copyText82 + '\n' + copyText522 + '\n' + copyText432 + '\n' + copyText442;
-    copyText = copyText.trim();
+    // 分项复制内容
+    const copyTextSingle = `${appData.aiPredictions.target_period}期【精选5注单式】\n` + fiveSingleBets.map((bet, i) => `${i + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}`).join('\n');
+    const copyText82 = `${appData.aiPredictions.target_period}期【8+2经济小复式】\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}`;
+    const copyText432 = `${appData.aiPredictions.target_period}期【4胆3拖2蓝】\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}`;
+    const copyText442 = `${appData.aiPredictions.target_period}期【4胆4拖2蓝】\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}`;
+    const copyText72 = `${appData.aiPredictions.target_period}期【7+2经济复式】\n红球: ${compound7_2.reds.join(' ')}\n蓝球: ${compound7_2.blues.join(' ')}`;
+    const copyText522 = `${appData.aiPredictions.target_period}期【5胆2拖2蓝】\n红胆: ${dantuo5_2_2.dan.join(' ')}\n红拖: ${dantuo5_2_2.tuo.join(' ')}\n蓝球: ${dantuo5_2_2.blues.join(' ')}`;
+    const copyText63 = `${appData.aiPredictions.target_period}期【6+3蓝球复式】\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}`;
 
     aggregateCardEl.style.display = 'block';
     
@@ -569,18 +664,7 @@ function renderAggregateCard(actualResult) {
     const copyBtn = aggregateCardEl.querySelector('#copyAggregateBtn');
     copyBtn.addEventListener('click', () => {
         copyTextToClipboard(copyText).then(() => {
-            const originalHtml = copyBtn.innerHTML;
-            copyBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                已复制！
-            `;
-            copyBtn.classList.add('copied');
-            setTimeout(() => {
-                copyBtn.innerHTML = originalHtml;
-                copyBtn.classList.remove('copied');
-            }, 2000);
+            toggleCopyButton(copyBtn);
         }).catch(err => {
             console.error('复制失败:', err);
             alert('复制失败，请手动选择号码复制');
@@ -602,18 +686,7 @@ function renderAggregateCard(actualResult) {
             const copyId = btn.getAttribute('data-text-id');
             const textToCopy = copyTexts[copyId];
             copyTextToClipboard(textToCopy).then(() => {
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    已复制
-                `;
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.classList.remove('copied');
-                }, 2000);
+                toggleCopyButton(btn);
             }).catch(err => {
                 console.error('复制失败:', err);
                 alert('复制失败，请手动选择号码复制');

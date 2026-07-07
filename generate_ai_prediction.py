@@ -24,7 +24,10 @@ MODELS = [
     {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "GPT-120B-OSS"},
     {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
     {"id": "gemini-3.1-pro-low", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
-    {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"}
+    {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"},
+    {"id": "grok-4.3-fast", "name": "Grok 4.3", "model_id": "Grok-4.3-Fast"},
+    {"id": "gemini-3.5-flash-low", "name": "Gemini 3.5 Flash", "model_id": "Gemini-3.5-Flash"},
+    {"id": "GPT-5.5", "name": "GPT 5.5", "model_id": "GPT-5.5"}
 ]
 
 # 文件路径
@@ -349,7 +352,7 @@ def generate_predictions() -> Dict[str, Any]:
                 meta_prediction = json.loads(meta_json_text)
                 
                 # 简单验证
-                if "standard_prediction" in meta_prediction and "dantuo_prediction" in meta_prediction:
+                if "five_single_predictions" in meta_prediction and "dantuo_prediction" in meta_prediction and "compound_prediction" in meta_prediction:
                     print("  ✓ Meta AI 分析完成！")
                     break
                 else:
