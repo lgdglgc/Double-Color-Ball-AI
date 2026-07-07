@@ -317,15 +317,19 @@ def generate_predictions() -> Dict[str, Any]:
     meta_prompt_template = load_meta_prompt_template()
     meta_prediction = None
     if meta_prompt_template:
-        # 构建各个模型的预测摘要
-        summary_lines = []
+        # 构建各个模型的预测摘要，输出符合 JSON 结构的格式，供 Meta AI 解析候选池
+        summary_data = []
         for p in all_predictions:
-            summary_lines.append(f"【{p.get('model_name', '未知模型')}】的预测：")
+            model_name = p.get('model_name', '未知模型')
             for i, group in enumerate(p.get('predictions', [])):
-                reds = ",".join(group['red_balls'])
-                summary_lines.append(f"  预测{i+1}: 红球[{reds}] 蓝球[{group['blue_ball']}] (理由: {group.get('strategy', '无')})")
-        
-        base_predictions_summary = "\n".join(summary_lines)
+                summary_data.append({
+                    "group_id": f"{model_name}_{i+1}",
+                    "strategy": group.get('strategy', '综合'),
+                    "red_balls": group.get('red_balls', []),
+                    "blue_ball": group.get('blue_ball', '01'),
+                    "description": group.get('reasoning', group.get('description', ''))[:100]
+                })
+        base_predictions_summary = json.dumps(summary_data, ensure_ascii=False, indent=2)
         
         system_instruction = "你是一个“超级裁判 AI”及双色球究极分析师。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
         full_meta_prompt = system_instruction + meta_prompt_template.format(
