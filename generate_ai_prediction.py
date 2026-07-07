@@ -25,7 +25,9 @@ MODELS = [
     {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
     {"id": "gemini-3.1-pro-low", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
     {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"},
-    {"id": "gemini-3.5-flash-low", "name": "Gemini 3.5 Flash", "model_id": "Gemini-3.5-Flash"}
+    {"id": "gemini-3.5-flash-low", "name": "Gemini 3.5 Flash Low", "model_id": "Gemini-3.5-Flash-Low"},
+    {"id": "gemini-3.5-flash-extra-low", "name": "Gemini 3.5 Flash Ex-Low", "model_id": "Gemini-3.5-Flash-Extra-Low"},
+    {"id": "gemini-3.5-flash-high", "name": "Gemini 3.5 Flash High", "model_id": "Gemini-3.5-Flash-High"}
 ]
 
 # 文件路径
