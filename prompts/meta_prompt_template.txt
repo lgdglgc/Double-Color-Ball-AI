@@ -22,7 +22,7 @@
 ```
 {base_predictions_summary}
 ```
-（格式：[{group_id, strategy, red_balls[], blue_ball, description}, ...]）
+（格式：[{{group_id, strategy, red_balls[], blue_ball, description}}, ...]）
 
 ## 数据预处理（自动完成）
 
