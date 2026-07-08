@@ -265,13 +265,18 @@ def generate_predictions() -> Dict[str, Any]:
                 # 构建 prompt
                 system_instruction = "你是一个专业的彩票数据分析师，擅长基于历史数据进行模式分析和预测。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
                 
-                full_prompt = system_instruction + prompt_template.format(
-                    target_period=target_period,
-                    target_date=target_date,
-                    lottery_history=history_json,
-                    prediction_date=prediction_date,
-                    model_id=model_config['model_id'],
-                    model_name=model_config['name']
+                full_prompt = system_instruction + prompt_template.replace(
+                    "{target_period}", str(target_period)
+                ).replace(
+                    "{target_date}", str(target_date)
+                ).replace(
+                    "{lottery_history}", str(history_json)
+                ).replace(
+                    "{prediction_date}", str(prediction_date)
+                ).replace(
+                    "{model_id}", str(model_config['model_id'])
+                ).replace(
+                    "{model_name}", str(model_config['name'])
                 )
 
                 # 调用模型
@@ -332,9 +337,10 @@ def generate_predictions() -> Dict[str, Any]:
         base_predictions_summary = json.dumps(summary_data, ensure_ascii=False, indent=2)
         
         system_instruction = "你是一个“超级裁判 AI”及双色球究极分析师。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
-        full_meta_prompt = system_instruction + meta_prompt_template.format(
-            lottery_history=history_json,
-            base_predictions_summary=base_predictions_summary
+        full_meta_prompt = system_instruction + meta_prompt_template.replace(
+            "{lottery_history}", str(history_json)
+        ).replace(
+            "{base_predictions_summary}", str(base_predictions_summary)
         )
 
         # 优先使用 Claude Opus 或 GPT-120B 作为 Meta 模型
