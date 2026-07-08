@@ -1036,12 +1036,18 @@ body::after {
 .strategy-description {
     color: var(--slate-500);
     font-size: 0.75rem;
-    line-height: 1.6;
+    line-height: 1.5;
     background: rgba(248, 250, 252, 0.5);
-    padding: 0.5rem;
+    padding: 0.4rem 0.5rem;
     border-radius: 0.25rem;
     border: 1px solid var(--slate-100);
     transition: background-color 0.2s;
+    /* 限制最大行数，防止大长文本撑破卡片布局 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .strategy-row:hover .strategy-description {
