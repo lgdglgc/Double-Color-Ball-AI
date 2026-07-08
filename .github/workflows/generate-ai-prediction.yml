@@ -47,6 +47,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add data/ai_predictions.json data/predictions_history.json
           git commit -m "chore: generate AI predictions $(date +'%Y-%m-%d %H:%M:%S')"
+          git pull --rebase
           git push
 
       - name: Summary
