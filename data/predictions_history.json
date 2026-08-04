@@ -19,6 +19,126 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "10",
+                "12",
+                "14",
+                "24",
+                "25",
+                "28"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14",
+                  "25"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "10",
+                "20",
+                "23",
+                "24",
+                "27",
+                "28"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "05",
+                "09",
+                "24",
+                "25",
+                "28",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05",
+                  "25"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "12",
+                "14",
+                "15",
+                "16",
+                "24",
+                "28"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "05",
+                "09",
+                "12",
+                "14",
+                "25",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05",
+                  "14",
+                  "25"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": false,
+                "total_hits": 3
+              }
+            }
+          ],
+          "best_group": 5,
+          "best_hit_count": 3
+        },
+        {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
           "predictions": [
@@ -751,6 +871,124 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "05",
+                "09",
+                "10",
+                "14",
+                "15",
+                "28"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "09",
+                  "28"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "14",
+                "15",
+                "22",
+                "28",
+                "30",
+                "33"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "28"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "05",
+                "09",
+                "14",
+                "15",
+                "21",
+                "28"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "09",
+                  "28"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "12",
+                "14",
+                "14",
+                "15",
+                "15",
+                "21"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "05",
+                "09",
+                "10",
+                "12",
+                "21",
+                "26"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "09"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            }
+          ],
+          "best_group": 1,
+          "best_hit_count": 2
+        },
+        {
           "model_id": "Claude-Sonnet-4.6",
           "model_name": "Claude Sonnet",
           "predictions": [
@@ -1368,6 +1606,123 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "05",
+                "11",
+                "14",
+                "21",
+                "24",
+                "26"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "05",
+                "14",
+                "21",
+                "29",
+                "32",
+                "33"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "05",
+                "11",
+                "14",
+                "21",
+                "24",
+                "27"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "05",
+                "12",
+                "13",
+                "14",
+                "14",
+                "21"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05",
+                  "12"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "11",
+                "24",
+                "26",
+                "27",
+                "28",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            }
+          ],
+          "best_group": 4,
+          "best_hit_count": 2
+        },
+        {
           "model_id": "Claude-Sonnet-4.6",
           "model_name": "Claude Sonnet",
           "predictions": [
@@ -1962,6 +2317,124 @@
         "date": "2026-07-21"
       },
       "models": [
+        {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "11",
+                "14",
+                "19",
+                "24",
+                "27",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "11",
+                "24",
+                "25",
+                "27",
+                "29",
+                "33"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "33"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "11",
+                "14",
+                "19",
+                "24",
+                "27",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "12",
+                "14",
+                "16",
+                "19",
+                "24",
+                "27"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "05",
+                "09",
+                "14",
+                "16",
+                "19",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            }
+          ],
+          "best_group": 1,
+          "best_hit_count": 1
+        },
         {
           "model_id": "Claude-Sonnet-4.6",
           "model_name": "Claude Sonnet",
@@ -2564,6 +3037,122 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "05",
+                "11",
+                "19",
+                "24",
+                "27",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": true,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "04",
+                "07",
+                "11",
+                "19",
+                "27",
+                "33"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "07"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "11",
+                "12",
+                "19",
+                "24",
+                "27",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": true,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "11",
+                "12",
+                "14",
+                "16",
+                "19",
+                "27"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "02",
+                "05",
+                "12",
+                "16",
+                "24",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": true,
+                "total_hits": 2
+              }
+            }
+          ],
+          "best_group": 1,
+          "best_hit_count": 2
+        },
+        {
           "model_id": "Claude-Sonnet-4.6",
           "model_name": "Claude Sonnet",
           "predictions": [
@@ -3158,6 +3747,122 @@
         "date": "2026-07-16"
       },
       "models": [
+        {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "01",
+                "11",
+                "14",
+                "19",
+                "24",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "24"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "01",
+                "19",
+                "24",
+                "28",
+                "32",
+                "33"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "24"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "01",
+                "11",
+                "14",
+                "19",
+                "24",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "24"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "01",
+                "14",
+                "16",
+                "19",
+                "22",
+                "24"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "24"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "05",
+                "11",
+                "14",
+                "16",
+                "22",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            }
+          ],
+          "best_group": 1,
+          "best_hit_count": 1
+        },
         {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
@@ -3893,6 +4598,118 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "14",
+                "16",
+                "18",
+                "24",
+                "25",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "07",
+                "12",
+                "14",
+                "24",
+                "25",
+                "33"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "11",
+                "13",
+                "14",
+                "24",
+                "25",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "11"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "13",
+                "14",
+                "14",
+                "16",
+                "18",
+                "24"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "06",
+                "08",
+                "11",
+                "16",
+                "18",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "11"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            }
+          ],
+          "best_group": 3,
+          "best_hit_count": 1
+        },
+        {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
           "predictions": [
@@ -4602,6 +5419,129 @@
         "date": "2026-07-12"
       },
       "models": [
+        {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "06",
+                "14",
+                "18",
+                "19",
+                "24",
+                "25"
+              ],
+              "blue_ball": "15",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "24"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "07",
+                "10",
+                "14",
+                "23",
+                "24",
+                "25"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "24"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "01",
+                "14",
+                "19",
+                "24",
+                "25",
+                "29"
+              ],
+              "blue_ball": "15",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "01",
+                  "24",
+                  "29"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": false,
+                "total_hits": 3
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "14",
+                "14",
+                "18",
+                "19",
+                "22",
+                "24"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "22",
+                  "24"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "01",
+                "06",
+                "18",
+                "19",
+                "22",
+                "29"
+              ],
+              "blue_ball": "15",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "01",
+                  "22",
+                  "29"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": false,
+                "total_hits": 3
+              }
+            }
+          ],
+          "best_group": 3,
+          "best_hit_count": 3
+        },
         {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
@@ -5343,6 +6283,120 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "08",
+                "19",
+                "21",
+                "22",
+                "24",
+                "25"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "19",
+                "21",
+                "24",
+                "28",
+                "32",
+                "33"
+              ],
+              "blue_ball": "02",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "28"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "11",
+                "19",
+                "21",
+                "22",
+                "24",
+                "25"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "11"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "12",
+                "19",
+                "21",
+                "21",
+                "22",
+                "24"
+              ],
+              "blue_ball": "02",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "06",
+                "08",
+                "11",
+                "12",
+                "22",
+                "25"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "11"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            }
+          ],
+          "best_group": 2,
+          "best_hit_count": 1
+        },
+        {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
           "predictions": [
@@ -6056,6 +7110,132 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "05",
+                "08",
+                "19",
+                "21",
+                "24",
+                "25"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05",
+                  "25"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "05",
+                "11",
+                "14",
+                "19",
+                "22",
+                "25"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "05",
+                  "14",
+                  "25"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": true,
+                "total_hits": 4
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "01",
+                "05",
+                "11",
+                "19",
+                "21",
+                "25"
+              ],
+              "blue_ball": "07",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "01",
+                  "05",
+                  "25"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": false,
+                "total_hits": 3
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "04",
+                "08",
+                "14",
+                "18",
+                "22",
+                "24"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "04",
+                  "14",
+                  "18"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": true,
+                "total_hits": 4
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "04",
+                "12",
+                "16",
+                "18",
+                "28",
+                "31"
+              ],
+              "blue_ball": "02",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "04",
+                  "18"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            }
+          ],
+          "best_group": 2,
+          "best_hit_count": 4
+        },
+        {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
           "predictions": [
@@ -6542,6 +7722,127 @@
         "date": "2026-07-05"
       },
       "models": [
+        {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "08",
+                "11",
+                "16",
+                "19",
+                "21",
+                "22"
+              ],
+              "blue_ball": "02",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "19"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "01",
+                "05",
+                "12",
+                "20",
+                "22",
+                "32"
+              ],
+              "blue_ball": "16",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "01",
+                  "20"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "01",
+                "05",
+                "09",
+                "17",
+                "19",
+                "21"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "01",
+                  "19"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "08",
+                "12",
+                "16",
+                "17",
+                "20",
+                "22"
+              ],
+              "blue_ball": "16",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "20"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "05",
+                "12",
+                "20",
+                "25",
+                "29",
+                "31"
+              ],
+              "blue_ball": "04",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "20",
+                  "25"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            }
+          ],
+          "best_group": 2,
+          "best_hit_count": 2
+        },
         {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
@@ -7034,6 +8335,123 @@
       },
       "models": [
         {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "08",
+                "11",
+                "16",
+                "20",
+                "21",
+                "22"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "08",
+                  "21"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "03",
+                "11",
+                "15",
+                "22",
+                "28",
+                "31"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "03",
+                "11",
+                "15",
+                "21",
+                "25",
+                "31"
+              ],
+              "blue_ball": "15",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "21"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "06",
+                "12",
+                "15",
+                "16",
+                "20",
+                "22"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "12"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "03",
+                "10",
+                "16",
+                "22",
+                "27",
+                "30"
+              ],
+              "blue_ball": "06",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "30"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            }
+          ],
+          "best_group": 1,
+          "best_hit_count": 2
+        },
+        {
           "model_id": "GPT-120B-OSS",
           "model_name": "GPT 120B",
           "predictions": [
@@ -7408,6 +8826,124 @@
         "date": "2026-06-30"
       },
       "models": [
+        {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "08",
+                "09",
+                "14",
+                "16",
+                "22",
+                "30"
+              ],
+              "blue_ball": "08",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "02",
+                "06",
+                "12",
+                "17",
+                "23",
+                "30"
+              ],
+              "blue_ball": "01",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "02",
+                  "23"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "09",
+                "15",
+                "17",
+                "23",
+                "27",
+                "31"
+              ],
+              "blue_ball": "15",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "23"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "06",
+                "12",
+                "14",
+                "16",
+                "22",
+                "26"
+              ],
+              "blue_ball": "01",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "26"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "02",
+                "11",
+                "19",
+                "27",
+                "30",
+                "32"
+              ],
+              "blue_ball": "02",
+              "description": "MetaAI 混合专家 (MoE) 超级裁判裁决推荐",
+              "hit_result": {
+                "red_hits": [
+                  "02",
+                  "32"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            }
+          ],
+          "best_group": 2,
+          "best_hit_count": 2
+        },
         {
           "model_id": "SSB-Team-001",
           "model_name": "GPT 120B",

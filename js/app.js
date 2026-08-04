@@ -801,22 +801,44 @@ function prepareChartData() {
 
     // 转换为Chart.js数据集格式
     const colors = {
+        'MetaAI 超级裁判': '#ec4899',
+        'MetaAI': '#ec4899',
         'GPT-5': '#10b981',
+        'GPT 120B': '#10b981',
         'Claude 4.5': '#8b5cf6',
+        'Claude Sonnet': '#8b5cf6',
+        'Claude Opus': '#a855f7',
         'Gemini 2.5': '#3b82f6',
-        'DeepSeek R1': '#f59e0b'
+        'Gemini 3.1 Pro': '#3b82f6',
+        'DeepSeek R1': '#f59e0b',
+        'Deep Learning Prediction Model': '#f59e0b'
     };
 
-    const datasets = Object.keys(modelsData).map(modelName => ({
-        label: modelName,
-        data: modelsData[modelName],
-        borderColor: colors[modelName] || '#6b7280',
-        backgroundColor: colors[modelName] || '#6b7280',
-        borderWidth: 3,
-        pointRadius: 4,
-        pointHoverRadius: 7,
-        tension: 0.1
-    }));
+    const modelKeys = Object.keys(modelsData);
+    // 确保 MetaAI 在前面
+    modelKeys.sort((a, b) => {
+        const isMetaA = a.includes('MetaAI') || a.includes('超级裁判');
+        const isMetaB = b.includes('MetaAI') || b.includes('超级裁判');
+        if (isMetaA && !isMetaB) return -1;
+        if (!isMetaA && isMetaB) return 1;
+        return 0;
+    });
+
+    const datasets = modelKeys.map(modelName => {
+        const isMeta = modelName.includes('MetaAI') || modelName.includes('超级裁判');
+        const color = colors[modelName] || (isMeta ? '#ec4899' : '#6b7280');
+        return {
+            label: modelName,
+            data: modelsData[modelName],
+            borderColor: color,
+            backgroundColor: color,
+            borderWidth: isMeta ? 4 : 3,
+            pointRadius: isMeta ? 6 : 4,
+            pointHoverRadius: isMeta ? 8 : 7,
+            tension: 0.1,
+            order: isMeta ? 0 : 1
+        };
+    });
 
     return { labels, datasets };
 }

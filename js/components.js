@@ -286,21 +286,22 @@ const Components = {
      */
     createModelHitItem(model, index, isLast = false) {
         const item = document.createElement('div');
-        item.className = 'model-hit-item';
+        const isMeta = model.model_id === 'MetaAI-MoE' || (model.model_name && (model.model_name.includes('MetaAI') || model.model_name.includes('超级裁判')));
+        item.className = `model-hit-item${isMeta ? ' meta-ai-hit-item' : ''}`;
 
         // 计算最佳命中数
         const bestHit = Math.max(...model.predictions.map(p => p.hit_result?.total_hits || 0));
 
         // 清理 model_id 以生成有效的 DOM ID
-        const safeModelId = model.model_id.replace(/[^a-zA-Z0-9-_]/g, '-');
+        const safeModelId = (model.model_id || 'model').replace(/[^a-zA-Z0-9-_]/g, '-');
 
         item.innerHTML = `
             ${!isLast ? '<div class="model-hit-connector"></div>' : ''}
             <div class="model-hit-row">
-                <div class="model-hit-number">${index}</div>
+                <div class="model-hit-number ${isMeta ? 'meta-hit-number' : ''}">${isMeta ? '👑' : index}</div>
                 <div class="model-hit-content">
                     <div class="model-hit-header">
-                        <h4 class="model-hit-name">${model.model_name}</h4>
+                        <h4 class="model-hit-name ${isMeta ? 'meta-hit-name' : ''}">${model.model_name} ${isMeta ? '<span class="badge-meta-tag">MoE 超级裁判</span>' : ''}</h4>
                         ${bestHit >= 4 ? `
                         <span class="high-hit-badge">
                             <svg viewBox="0 0 24 24" fill="currentColor">

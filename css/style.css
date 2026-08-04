@@ -1323,6 +1323,41 @@ body::after {
     fill: currentColor;
 }
 
+/* MetaAI 超级裁判 历史样式 */
+.meta-ai-hit-item {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem;
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+}
+
+.meta-hit-number {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6) !important;
+    color: white !important;
+    border: none !important;
+    font-size: 12px !important;
+    box-shadow: 0 2px 6px rgba(236, 72, 153, 0.3);
+}
+
+.meta-hit-name {
+    color: #db2777 !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge-meta-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #ec4899, #a855f7);
+    color: white;
+    box-shadow: 0 2px 4px rgba(236, 72, 153, 0.25);
+    letter-spacing: 0.5px;
+}
+
 /* Prediction Groups in History */
 .prediction-groups {
     display: grid;

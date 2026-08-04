@@ -447,6 +447,35 @@ def archive_old_prediction(lottery_data: Dict[str, Any]):
 
         # 为每个模型计算命中结果
         models_with_hits = []
+
+        # 处理 Meta AI 超级裁判预测
+        if old_predictions.get("meta_prediction"):
+            meta_pred = old_predictions["meta_prediction"]
+            meta_single_bets = meta_pred.get("five_single_predictions", [])
+            strategies = ["稳健共识型", "冷热平衡型", "奇数强击型", "二区奇袭型", "逆向防冷型"]
+            
+            meta_predictions_with_hits = []
+            for idx, bet in enumerate(meta_single_bets):
+                group_data = {
+                    "group_id": idx + 1,
+                    "strategy": strategies[idx] if idx < len(strategies) else f"MetaAI 推荐 {idx + 1}",
+                    "red_balls": sorted(bet["red_balls"], key=lambda x: int(x)),
+                    "blue_ball": bet["blue_ball"],
+                    "description": meta_pred.get("analysis_reasoning", "MetaAI 混合专家 (MoE) 超级裁判裁决推荐")[:100]
+                }
+                group_data["hit_result"] = calculate_hit_result(group_data, actual_result)
+                meta_predictions_with_hits.append(group_data)
+            
+            if meta_predictions_with_hits:
+                best_meta_pred = max(meta_predictions_with_hits, key=lambda p: p["hit_result"]["total_hits"])
+                models_with_hits.append({
+                    "model_id": "MetaAI-MoE",
+                    "model_name": "MetaAI 超级裁判",
+                    "predictions": meta_predictions_with_hits,
+                    "best_group": best_meta_pred["group_id"],
+                    "best_hit_count": best_meta_pred["hit_result"]["total_hits"]
+                })
+
         for model_data in old_predictions.get("models", []):
             # 为每组预测计算命中
             predictions_with_hits = []
