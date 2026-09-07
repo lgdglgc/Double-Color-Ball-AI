@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 from openai import OpenAI
+from generate_ai_prediction import format_compact_history, compute_statistical_features, format_precomputed_features_text
 
 # 解决 Windows 控制台打印 emoji 报 UnicodeEncodeError 的跨平台问题
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
@@ -36,26 +37,30 @@ with open(LOTTERY_HISTORY_FILE, 'r', encoding='utf-8') as f:
     lottery_data = json.load(f)
 print(f"✅ 历史数据加载成功\n")
 
-# 准备数据
+# 准备数据 (最近50期 + 特征工程预计算)
 next_draw = lottery_data.get("next_draw", {})
 target_period = next_draw.get("next_period", "")
 target_date = next_draw.get("next_date_display", "")
-history_data = lottery_data.get("data", [])[:30]
-history_json = json.dumps(history_data, ensure_ascii=False, indent=2)
+history_draws = lottery_data.get("data", [])[:50]
+compact_history = format_compact_history(history_draws)
+features = compute_statistical_features(lottery_data, history_count=50)
+precomputed_features_text = format_precomputed_features_text(features)
 
 print(f"🎯 目标期号: {target_period}")
 print(f"📅 开奖日期: {target_date}\n")
 
-# 构建 prompt（使用 replace 避免 JSON 括号被误识别为 format 占位符）
+# 构建 prompt
 print("🔧 构建 Prompt...")
 prompt = prompt_template.replace(
     "{target_period}", str(target_period)
 ).replace(
     "{target_date}", str(target_date)
 ).replace(
-    "{lottery_history}", str(history_json)
+    "{lottery_history}", str(compact_history)
 ).replace(
-    "{prediction_date}", "2026-07-28"
+    "{precomputed_features}", str(precomputed_features_text)
+).replace(
+    "{prediction_date}", "2026-09-08"
 ).replace(
     "{model_id}", "GPT-120B-OSS"
 ).replace(
@@ -70,7 +75,7 @@ with open(debug_prompt_path, 'w', encoding='utf-8') as f:
 print(f"💾 Prompt 已保存到 {debug_prompt_path}\n")
 
 # 调用 API
-print("🤖 调用 GPT-5 模型...")
+print("🤖 调用 GPT-4o 模型...")
 try:
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
@@ -93,9 +98,10 @@ try:
     print(f"✅ API 调用成功\n")
 
     # 保存原始响应
-    with open('/tmp/test_response.txt', 'w', encoding='utf-8') as f:
+    test_resp_file = os.path.join(tempfile.gettempdir(), "test_response.txt")
+    with open(test_resp_file, 'w', encoding='utf-8') as f:
         f.write(response_text)
-    print("💾 响应已保存到 /tmp/test_response.txt\n")
+    print(f"💾 响应已保存到 {test_resp_file}\n")
 
     print("="*50)
     print("响应前500字符:")
@@ -133,6 +139,7 @@ try:
         print(f"组 {pred['group_id']}: {pred['strategy']}")
         print(f"  红球: {', '.join(pred['red_balls'])}")
         print(f"  蓝球: {pred['blue_ball']}")
+        print(f"  描述: {pred.get('description', '')}")
         print()
 
     print("🎉 测试成功!")
