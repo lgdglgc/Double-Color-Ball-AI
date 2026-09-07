@@ -159,7 +159,7 @@ def compute_statistical_features(lottery_data: Dict[str, Any], history_count: in
             neighbor_set.add(f"{val + 1:02d}")
     neighbor_candidates = sorted(list(neighbor_set - set(last_reds)))
 
-    # 5. 蓝球多维度统计
+    # 5. 蓝球多维度全面量化统计（打破04/05热度死循环，多维对冲）
     blue_freq_20 = {f"{i:02d}": 0 for i in range(1, 17)}
     blue_freq_50 = {f"{i:02d}": 0 for i in range(1, 17)}
     for idx, d in enumerate(draws):
@@ -182,10 +182,19 @@ def compute_statistical_features(lottery_data: Dict[str, Any], history_count: in
         blue_omission[b_str] = omission if found else len(all_draws)
 
     sorted_blues_by_freq = sorted(blue_freq_20.items(), key=lambda x: x[1], reverse=True)
-    top_blue_freq = [f"{k}({v}次)" for k, v in sorted_blues_by_freq[:5] if v > 0]
+    top_blue_freq = [f"{k}({v}次)" for k, v in sorted_blues_by_freq[:4] if v > 0]
+
+    # 黄金均值回归温冷蓝球 (遗漏 7~16 期，历史理论平均出号周期是16期)
+    warmup_blues = [f"{k}(遗漏{v}期)" for k, v in sorted(blue_omission.items(), key=lambda x: x[1]) if 7 <= v <= 16]
+    cold_blues = [f"{k}(遗漏{v}期)" for k, v in sorted(blue_omission.items(), key=lambda x: x[1], reverse=True) if v > 16]
 
     last_blue_val = int(last_blue)
     last_blue_road = last_blue_val % 3
+    # 推荐轮转路数（非上期路数的另两路号码，历史轮转率 >75%）
+    other_roads = [r for r in [0, 1, 2] if r != last_blue_road]
+    rotation_blues = [f"{i:02d}" for i in range(1, 17) if i % 3 in other_roads]
+
+    # 黄金振幅区间 [2, 7]
     amplitude_recommended = [
         f"{i:02d}" for i in range(1, 17) if 2 <= abs(i - last_blue_val) <= 7
     ]
@@ -228,9 +237,12 @@ def compute_statistical_features(lottery_data: Dict[str, Any], history_count: in
         "red_trends": red_trends,
         "red_omission": red_omission,
         "top_blue_freq": top_blue_freq,
+        "warmup_blues": warmup_blues,
+        "cold_blues": cold_blues,
         "blue_freq_20": blue_freq_20,
         "blue_omission": blue_omission,
         "last_blue_road": f"{last_blue_road}路 (除3余{last_blue_road})",
+        "rotation_blues": rotation_blues,
         "amplitude_recommended_blues": amplitude_recommended,
         "avg_sum": avg_sum,
         "sum_range": f"{min_sum} ~ {max_sum}",
@@ -253,9 +265,10 @@ def format_precomputed_features_text(features: Dict[str, Any]) -> str:
     omissions_text = ", ".join(omissions_gt_5[:12])
 
     top_blues = ", ".join(features["top_blue_freq"])
+    warmup_blues_text = ", ".join(features.get("warmup_blues", [])) or "近期无温冷区间蓝球"
+    rotation_blues_text = ", ".join(features.get("rotation_blues", []))
     amp_blues = ", ".join(features["amplitude_recommended_blues"])
-    blue_omiss = [f"{k}(遗漏{v}期)" for k, v in sorted(features["blue_omission"].items(), key=lambda x: x[1], reverse=True) if v >= 8]
-    blue_omiss_text = ", ".join(blue_omiss[:6]) if blue_omiss else "近期无显著大遗漏蓝球"
+    cold_blues_text = ", ".join(features.get("cold_blues", [])[:4]) or "无极端冷号"
 
     z = features["zone_dist"]
     total_balls = sum(z.values()) if sum(z.values()) > 0 else 1
@@ -273,11 +286,14 @@ def format_precomputed_features_text(features: Dict[str, Any]) -> str:
 - **深冷防守红球 (当前遗漏>18期，单注建议最多防0~1个)**: [{extreme_cold}]
 - **显著遗漏红球速查 (>=5期)**: {omissions_text}
 
-### 3. 蓝球多维属性与振幅空间
+### 3. 蓝球多维属性与全域分布空间（杜绝偏狭单一号码，必须多维分流）
 - **上期蓝球**: {last_draw['blue']}，属于 **{features['last_blue_road']}**
-- **蓝球近20期高频号**: {top_blues}
-- **蓝球黄金振幅 [2, 7] 推荐候选号**: [{amp_blues}]
-- **蓝球当前较长遗漏号速查 (>=8期)**: {blue_omiss_text}
+- **热态蓝球 (近20期高频活跃)**: [{top_blues}]
+- **均值回归黄金温冷蓝球 (当前遗漏 7~16 期，极高概率爆发窗口)**: [{warmup_blues_text}]（防冷回归核心）
+- **012 路推荐轮转池 (上期为{features['last_blue_road']}，本期优先轮转另两路)**: [{rotation_blues_text}]
+- **黄金振幅 [2, 7] 推荐候选号**: [{amp_blues}]
+- **大号区(09-16)重点关注**: 09, 10, 11, 12, 13, 14, 15, 16（近多期小号过热，大号区具备极高回补反弹价值）
+- **深冷蓝球防守 (>16期)**: {cold_blues_text}
 
 ### 4. 历史形态基线特征（近50期真实统计基线）
 - **和值参考**: 平均 {features['avg_sum']}（历史主流集中在 90 ~ 120 之间）

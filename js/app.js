@@ -121,10 +121,10 @@ function generateCopyText(analysisReasoning, targetPeriod, fiveSingleBets, compo
         text += `${idx + 1}. 红球: ${bet.reds.join(' ')} | 蓝球: ${bet.blue}\n`;
     });
 
-    text += `\n【6+3 蓝球复式】(3注6元)\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}\n`;
-    text += `\n【7+2 经济复式】(42注84元)\n红球: ${compound7_2.reds.join(' ')}\n蓝球: ${compound7_2.blues.join(' ')}\n`;
+    text += `\n【6+3 全路数蓝球复式】(3注6元 · 012路全包)\n红球: ${compound6_3.reds.join(' ')}\n蓝球: ${compound6_3.blues.join(' ')}\n`;
+    text += `\n【7+2 经济复式】(42注84元 · 大小对冲)\n红球: ${compound7_2.reds.join(' ')}\n蓝球: ${compound7_2.blues.join(' ')}\n`;
     text += `\n【8+2 经济小复式】(56注112元)\n红球: ${compound8_2.reds.join(' ')}\n蓝球: ${compound8_2.blues.join(' ')}\n`;
-    text += `\n【5胆2拖2蓝】(4注8元)\n红胆: ${dantuo5_2_2.dan.join(' ')}\n红拖: ${dantuo5_2_2.tuo.join(' ')}\n蓝球: ${dantuo5_2_2.blues.join(' ')}\n`;
+    text += `\n【5胆2拖2蓝】(4注8元 · 大小对冲)\n红胆: ${dantuo5_2_2.dan.join(' ')}\n红拖: ${dantuo5_2_2.tuo.join(' ')}\n蓝球: ${dantuo5_2_2.blues.join(' ')}\n`;
     text += `\n【4胆3拖2蓝】(6注12元)\n红胆: ${dantuo4_3_2.dan.join(' ')}\n红拖: ${dantuo4_3_2.tuo.join(' ')}\n蓝球: ${dantuo4_3_2.blues.join(' ')}\n`;
     text += `\n【4胆4拖2蓝】(12注24元)\n红胆: ${dantuo4_4_2.dan.join(' ')}\n红拖: ${dantuo4_4_2.tuo.join(' ')}\n蓝球: ${dantuo4_4_2.blues.join(' ')}\n`;
     return text.trim();
@@ -329,6 +329,25 @@ function renderAggregateCard(actualResult) {
             };
         }
 
+        // 蓝球分类与智能对冲辅助工具（打破单一蓝球依赖，实施全路数与大小对冲）
+        const getRoad = (bStr) => parseInt(bStr) % 3; // 0, 1, 2 路
+        const isBigBlue = (bStr) => parseInt(bStr) >= 9; // 大号区 09-16
+        const candidateBlues = [...new Set([
+            ...compound8_2.blues,
+            ...(meta.dantuo_prediction ? meta.dantuo_prediction.blue_balls : []),
+            ...fiveSingleBets.map(b => b.blue),
+            ...sortedBlues
+        ])];
+
+        // 智能提取 0路、1路、2路 表现最好的蓝球
+        const road0Blue = candidateBlues.find(b => getRoad(b) === 0) || "12";
+        const road1Blue = candidateBlues.find(b => getRoad(b) === 1) || "04";
+        const road2Blue = candidateBlues.find(b => getRoad(b) === 2) || "05";
+
+        // 智能提取 小号区(01-08) 和 大号区(09-16) 蓝球
+        const smallBlue = candidateBlues.find(b => !isBigBlue(b)) || "05";
+        const bigBlue = candidateBlues.find(b => isBigBlue(b)) || "12";
+
         // 2.3 胆拖推荐：直接读取 Meta AI 的 dantuo_prediction (4胆+4拖+2蓝)
         if (meta.dantuo_prediction) {
             const metaDan = meta.dantuo_prediction.dan_reds;
@@ -349,28 +368,27 @@ function renderAggregateCard(actualResult) {
                 blues: [...metaBlues].sort((a, b) => parseInt(a) - parseInt(b))
             };
 
-            // 5胆2拖2蓝 (组合 meta 胆+拖 前5个为胆，后2个为拖)
+            // 5胆2拖2蓝 (组合 meta 胆+拖 前5个为胆，后2个为拖；蓝球采用大小对冲组合，提供差异化防御)
             const combinedReds = [...metaDan, ...metaTuo];
             dantuo5_2_2 = {
                 dan: combinedReds.slice(0, 5).sort((a, b) => parseInt(a) - parseInt(b)),
                 tuo: combinedReds.slice(5, 7).sort((a, b) => parseInt(a) - parseInt(b)),
-                blues: [...metaBlues].sort((a, b) => parseInt(a) - parseInt(b))
+                blues: [smallBlue, bigBlue].sort((a, b) => parseInt(a) - parseInt(b))
             };
         }
 
         // 2.4 从 Meta 衍生出的其他复式
-        // 7+2 复式：使用 8+2 大底的前 7 个红球和 2 个蓝球
+        // 7+2 复式：使用 8+2 大底的前 7 个红球，蓝球执行“大小区对冲”组合（1个01-08小号 + 1个09-16大号），打破单一小号扎堆
         compound7_2 = {
             reds: compound8_2.reds.slice(0, 7).sort((a, b) => parseInt(a) - parseInt(b)),
-            blues: compound8_2.blues.slice(0, 2).sort((a, b) => parseInt(a) - parseInt(b))
+            blues: [smallBlue, bigBlue].sort((a, b) => parseInt(a) - parseInt(b))
         };
 
-        // 6+3 复式：使用第一注单式红球 + 所有模型推荐前3的蓝球
+        // 6+3 复式：使用第一注单式红球，蓝球强制覆盖 0路、1路、2路 全路数（100% 捕获出号路数）
         const standardReds = fiveSingleBets[0].reds;
-        const compoundBlues = [...new Set([...compound8_2.blues, ...sortedBlues])].slice(0, 3);
         compound6_3 = {
             reds: [...standardReds].sort((a, b) => parseInt(a) - parseInt(b)),
-            blues: compoundBlues.sort((a, b) => parseInt(a) - parseInt(b))
+            blues: [road0Blue, road1Blue, road2Blue].sort((a, b) => parseInt(a) - parseInt(b))
         };
     }
 
@@ -442,7 +460,7 @@ function renderAggregateCard(actualResult) {
             
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="aggregate-section-title" style="margin-bottom: 0;">【6+3 蓝球复式】(3注6元)</div>
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【6+3 全路数蓝球复式】(3注6元 · 012路全包)</div>
                     <button class="section-copy-btn" data-text-id="copy63">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
@@ -454,7 +472,7 @@ function renderAggregateCard(actualResult) {
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="aggregate-section-title" style="margin-bottom: 0;">【7+2 经济复式】(42注84元)</div>
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【7+2 经济复式】(42注84元 · 大小对冲)</div>
                     <button class="section-copy-btn" data-text-id="copy72">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
@@ -478,7 +496,7 @@ function renderAggregateCard(actualResult) {
 
             <div class="aggregate-section" style="margin-top: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <div class="aggregate-section-title" style="margin-bottom: 0;">【5胆2拖2蓝】(4注8元)</div>
+                    <div class="aggregate-section-title" style="margin-bottom: 0;">【5胆2拖2蓝】(4注8元 · 大小对冲)</div>
                     <button class="section-copy-btn" data-text-id="copy522">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制
                     </button>
