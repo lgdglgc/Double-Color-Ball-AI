@@ -1,0 +1,20 @@
+{
+  "name": "double-color-ball-ai",
+  "version": "3.0.0",
+  "description": "双色球 AI 预测系统 - Double Color Ball AI Prediction System",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "test": "echo \"No tests specified\""
+  },
+  "keywords": [
+    "lottery",
+    "ai-prediction",
+    "double-color-ball"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
