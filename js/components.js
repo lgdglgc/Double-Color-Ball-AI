@@ -254,8 +254,13 @@ const Components = {
         const hitsList = document.createElement('div');
         hitsList.className = 'model-hits-list';
 
-        record.models.forEach((model, index) => {
-            hitsList.appendChild(this.createModelHitItem(model, index + 1, index === record.models.length - 1));
+        const models = Array.isArray(record.models) ? record.models : [];
+        models.forEach((model, index) => {
+            try {
+                hitsList.appendChild(this.createModelHitItem(model, index + 1, index === models.length - 1));
+            } catch (err) {
+                console.warn('渲染模型命中记录失败:', err);
+            }
         });
 
         bodyWrapper.appendChild(hitsList);
@@ -289,11 +294,10 @@ const Components = {
         const isMeta = model.model_id === 'MetaAI-MoE' || (model.model_name && (model.model_name.includes('MetaAI') || model.model_name.includes('超级裁判')));
         item.className = `model-hit-item${isMeta ? ' meta-ai-hit-item' : ''}`;
 
-        // 计算最佳命中数
-        const bestHit = Math.max(...model.predictions.map(p => p.hit_result?.total_hits || 0));
+        const predictions = Array.isArray(model.predictions) ? model.predictions : [];
 
-        // 清理 model_id 以生成有效的 DOM ID
-        const safeModelId = (model.model_id || 'model').replace(/[^a-zA-Z0-9-_]/g, '-');
+        // 计算最佳命中数
+        const bestHit = predictions.length > 0 ? Math.max(0, ...predictions.map(p => p.hit_result?.total_hits || 0)) : 0;
 
         item.innerHTML = `
             ${!isLast ? '<div class="model-hit-connector"></div>' : ''}
@@ -301,7 +305,7 @@ const Components = {
                 <div class="model-hit-number ${isMeta ? 'meta-hit-number' : ''}">${isMeta ? '👑' : index}</div>
                 <div class="model-hit-content">
                     <div class="model-hit-header">
-                        <h4 class="model-hit-name ${isMeta ? 'meta-hit-name' : ''}">${model.model_name} ${isMeta ? '<span class="badge-meta-tag">MoE 超级裁判</span>' : ''}</h4>
+                        <h4 class="model-hit-name ${isMeta ? 'meta-hit-name' : ''}">${model.model_name || 'AI 模型'} ${isMeta ? '<span class="badge-meta-tag">MoE 超级裁判</span>' : ''}</h4>
                         ${bestHit >= 4 ? `
                         <span class="high-hit-badge">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -310,16 +314,22 @@ const Components = {
                             高命中: ${bestHit}
                         </span>` : ''}
                     </div>
-                    <div class="prediction-groups" id="groups-${safeModelId}"></div>
+                    <div class="prediction-groups"></div>
                 </div>
             </div>
         `;
 
-        // 添加预测组
-        const groupsContainer = item.querySelector(`#groups-${safeModelId}`);
-        model.predictions.forEach(prediction => {
-            groupsContainer.appendChild(this.createPredictionGroupRow(prediction));
-        });
+        // 添加预测组 (直接使用局部 class 查询，杜绝全局 ID 冲突或非法字符异常)
+        const groupsContainer = item.querySelector('.prediction-groups');
+        if (groupsContainer) {
+            predictions.forEach(prediction => {
+                try {
+                    groupsContainer.appendChild(this.createPredictionGroupRow(prediction));
+                } catch (e) {
+                    console.warn('渲染单条预测组失败:', e);
+                }
+            });
+        }
 
         return item;
     },
@@ -331,33 +341,46 @@ const Components = {
      */
     createPredictionGroupRow(prediction) {
         const row = document.createElement('div');
-        const totalHits = prediction.hit_result?.total_hits || 0;
+        if (!prediction) return row;
+
+        const hitResult = prediction.hit_result || {};
+        const totalHits = typeof hitResult.total_hits === 'number' ? hitResult.total_hits : 0;
         const isWinning = totalHits >= 3;
 
         row.className = `prediction-group-row${isWinning ? ' winning' : ''}`;
+
+        // 策略名称容错处理，防止 undefined.substring() 报错导致页面白屏
+        const rawStrategy = prediction.strategy || (prediction.group_id ? `策略 G-${prediction.group_id}` : '推荐策略');
+        const shortStrategy = rawStrategy.length > 8 ? rawStrategy.substring(0, 8) + '..' : rawStrategy;
 
         // 球容器
         const ballsContainer = document.createElement('div');
         ballsContainer.className = 'prediction-group-balls';
         ballsContainer.innerHTML = `
-            <span class="prediction-group-strategy">${prediction.strategy.substring(0, 8)}${prediction.strategy.length > 8 ? '..' : ''}</span>
+            <span class="prediction-group-strategy">${shortStrategy}</span>
         `;
 
         const ballsList = document.createElement('div');
         ballsList.className = 'prediction-group-balls-list';
 
-        prediction.red_balls.forEach(num => {
-            const isHit = prediction.hit_result?.red_hits?.includes(num);
+        const redBalls = Array.isArray(prediction.red_balls) ? prediction.red_balls : [];
+        const redHits = Array.isArray(hitResult.red_hits) ? hitResult.red_hits : [];
+
+        redBalls.forEach(num => {
+            const isHit = redHits.includes(num);
             const miniBall = document.createElement('div');
             miniBall.className = `mini-ball${isHit ? ' hit' : ''}`;
             miniBall.textContent = num;
             ballsList.appendChild(miniBall);
         });
 
-        const blueBall = document.createElement('div');
-        blueBall.className = `mini-ball blue${prediction.hit_result?.blue_hit ? ' hit' : ''}`;
-        blueBall.textContent = prediction.blue_ball;
-        ballsList.appendChild(blueBall);
+        if (prediction.blue_ball) {
+            const blueHit = Boolean(hitResult.blue_hit);
+            const blueBall = document.createElement('div');
+            blueBall.className = `mini-ball blue${blueHit ? ' hit' : ''}`;
+            blueBall.textContent = prediction.blue_ball;
+            ballsList.appendChild(blueBall);
+        }
 
         ballsContainer.appendChild(ballsList);
         row.appendChild(ballsContainer);
@@ -366,8 +389,8 @@ const Components = {
         const stats = document.createElement('div');
         stats.className = 'prediction-group-stats';
 
-        const redHitCount = prediction.hit_result?.red_hit_count || 0;
-        const blueHit = prediction.hit_result?.blue_hit || false;
+        const redHitCount = typeof hitResult.red_hit_count === 'number' ? hitResult.red_hit_count : redHits.length;
+        const blueHit = Boolean(hitResult.blue_hit);
 
         stats.innerHTML = `
             <div class="stat-item">

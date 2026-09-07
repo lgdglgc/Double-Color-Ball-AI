@@ -882,10 +882,16 @@ function renderAccuracyCards() {
     const records = appData.predictionsHistory.predictions_history || [];
     const visibleRecords = records.slice(0, accuracyDisplayLimit);
 
-    // 渲染可视记录
+    // 渲染可视记录 (每个卡片独立容错，杜绝单卡片数据缺失导致整页空白)
     visibleRecords.forEach((record, index) => {
-        const card = Components.createAccuracyCard(record, index);
-        containerEl.appendChild(card);
+        try {
+            const card = Components.createAccuracyCard(record, index);
+            if (card) {
+                containerEl.appendChild(card);
+            }
+        } catch (err) {
+            console.warn(`渲染第 ${index} 项历史回溯卡片时发生警告:`, err);
+        }
     });
 
     // 如果还有更多记录，添加“加载更多”按钮
@@ -896,7 +902,7 @@ function renderAccuracyCards() {
         loadMoreBox.style.margin = '1.5rem 0';
 
         const loadMoreBtn = document.createElement('button');
-        loadMoreBtn.className = 'nav-item';
+        loadMoreBtn.className = 'btn-load-more';
         loadMoreBtn.style.padding = '0.65rem 1.75rem';
         loadMoreBtn.style.borderRadius = '9999px';
         loadMoreBtn.style.border = '1px solid var(--slate-300)';
@@ -906,9 +912,20 @@ function renderAccuracyCards() {
         loadMoreBtn.style.fontSize = '0.875rem';
         loadMoreBtn.style.cursor = 'pointer';
         loadMoreBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.04)';
+        loadMoreBtn.style.transition = 'all 0.2s ease';
         loadMoreBtn.textContent = `查看更多历史回溯 (已显示 ${visibleRecords.length} / ${records.length} 期)`;
 
-        loadMoreBtn.addEventListener('click', () => {
+        loadMoreBtn.addEventListener('mouseenter', () => {
+            loadMoreBtn.style.background = 'var(--slate-50)';
+            loadMoreBtn.style.borderColor = 'var(--slate-400)';
+        });
+        loadMoreBtn.addEventListener('mouseleave', () => {
+            loadMoreBtn.style.background = 'white';
+            loadMoreBtn.style.borderColor = 'var(--slate-300)';
+        });
+
+        loadMoreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             accuracyDisplayLimit += 15;
             renderAccuracyCards();
         });
@@ -1462,32 +1479,44 @@ function setupEventListeners() {
         });
     }
     
-    // Tab切换 - 桌面端
-    const navItems = document.querySelectorAll('.nav-item');
+    // Tab切换 - 桌面端 (严格限定在顶部导航栏内，避免捕获页面内部其他按钮)
+    const navItems = document.querySelectorAll('.header-nav .nav-item, nav .nav-item');
     navItems.forEach(item => {
-        item.addEventListener('click', () => handleTabSwitch(item.dataset.tab, navItems));
+        item.addEventListener('click', () => {
+            if (item.dataset && item.dataset.tab) {
+                handleTabSwitch(item.dataset.tab, navItems);
+            }
+        });
     });
 
     // Tab切换 - 移动端
     const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
     mobileNavItems.forEach(item => {
-        item.addEventListener('click', () => handleTabSwitch(item.dataset.tab, mobileNavItems));
+        item.addEventListener('click', () => {
+            if (item.dataset && item.dataset.tab) {
+                handleTabSwitch(item.dataset.tab, mobileNavItems);
+            }
+        });
     });
 }
 
 // 处理Tab切换
 function handleTabSwitch(tabName, navItems) {
+    if (!tabName) return; // 容错保护：无指定tab时不进行切换，防止清空所有激活容器导致白屏
+
     // 更新导航项状态
-    navItems.forEach(item => {
-        if (item.dataset.tab === tabName) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
-    });
+    if (navItems) {
+        navItems.forEach(item => {
+            if (item.dataset.tab === tabName) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
 
     // 同步桌面端和移动端状态
-    const allNavItems = document.querySelectorAll('.nav-item, .mobile-nav-item');
+    const allNavItems = document.querySelectorAll('.header-nav .nav-item, nav .nav-item, .mobile-nav-item');
     allNavItems.forEach(item => {
         if (item.dataset.tab === tabName) {
             item.classList.add('active');
