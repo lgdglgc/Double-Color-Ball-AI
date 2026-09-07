@@ -296,10 +296,17 @@
                     </div>
                 </div>
 
+                <!-- Chart Category Filter Pills -->
+                <div class="chart-category-bar" id="chartCategoryBar">
+                    <button class="chart-cat-btn active" data-cat="all" onclick="filterChartCategory('all')">全部分析图表 (All)</button>
+                    <button class="chart-cat-btn" data-cat="numbers" onclick="filterChartCategory('numbers')">号码走势与分布 (Numbers)</button>
+                    <button class="chart-cat-btn" data-cat="patterns" onclick="filterChartCategory('patterns')">形态指标与数论 (Patterns)</button>
+                </div>
+
                 <!-- Charts Grid -->
                 <div class="analysis-charts-grid">
                     <!-- Red Ball Frequency Chart with sort controls -->
-                    <div class="chart-container full-width">
+                    <div class="chart-container full-width" data-category="numbers">
                         <div class="chart-header" style="flex-wrap: wrap; gap: 0.75rem;">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -326,8 +333,27 @@
                         </div>
                     </div>
 
+                    <!-- Blue Ball Trend & Amplitude Chart (Full Width) -->
+                    <div class="chart-container full-width" data-category="numbers">
+                        <div class="chart-header">
+                            <div class="chart-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 6v6l4 2" />
+                                </svg>
+                            </div>
+                            <div class="chart-title-wrapper">
+                                <h3>蓝球期号动态走势与振幅追踪</h3>
+                                <p class="chart-description">主折线：蓝球出号轨迹（带 01-08 小区与 09-16 大区背景参考） · 副柱状：相邻期跨度振幅（位移差）</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas" style="height: 280px;">
+                            <canvas id="blueTrendChart"></canvas>
+                        </div>
+                    </div>
+
                     <!-- Blue Ball Frequency Chart -->
-                    <div class="chart-container">
+                    <div class="chart-container" data-category="numbers">
                         <div class="chart-header">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -337,8 +363,8 @@
                                 </svg>
                             </div>
                             <div class="chart-title-wrapper">
-                                <h3>蓝球出现频率</h3>
-                                <p class="chart-description">蓝球号码分布情况</p>
+                                <h3>蓝球出现频率与遗漏</h3>
+                                <p class="chart-description">蓝球号码分布与均线基准对比</p>
                             </div>
                         </div>
                         <div class="chart-canvas">
@@ -346,46 +372,8 @@
                         </div>
                     </div>
 
-                    <!-- Odd-Even Ratio Chart -->
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-                                    <path d="M22 12A10 10 0 0 0 12 2v10z" />
-                                </svg>
-                            </div>
-                            <div class="chart-title-wrapper">
-                                <h3>奇偶比例分布</h3>
-                                <p class="chart-description">红球奇偶比统计</p>
-                            </div>
-                        </div>
-                        <div class="chart-canvas">
-                            <canvas id="oddEvenChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Sum Trend Chart -->
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 3v18h18" />
-                                    <polyline points="22 6 12 16 2 12" />
-                                </svg>
-                            </div>
-                            <div class="chart-title-wrapper">
-                                <h3>红球和值走势</h3>
-                                <p class="chart-description">近期红球总和变化趋势（带平均参考线）</p>
-                            </div>
-                        </div>
-                        <div class="chart-canvas">
-                            <canvas id="sumTrendChart"></canvas>
-                        </div>
-                    </div>
-
                     <!-- Scatter Chart: Freq vs Omission -->
-                    <div class="chart-container">
+                    <div class="chart-container" data-category="numbers">
                         <div class="chart-header">
                             <div class="chart-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -406,8 +394,93 @@
                         </div>
                     </div>
 
+                    <!-- Red Ball Patterns Chart (Repeat, Neighbor, Consecutive Series) - Full Width -->
+                    <div class="chart-container full-width" data-category="patterns">
+                        <div class="chart-header">
+                            <div class="chart-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 3h5v5" />
+                                    <path d="M8 21H3v-5" />
+                                    <path d="M21 3l-7 7" />
+                                    <path d="M3 21l7-7" />
+                                </svg>
+                            </div>
+                            <div class="chart-title-wrapper">
+                                <h3>红球形态三态走势（重号 · 邻号 · 连号）</h3>
+                                <p class="chart-description">每期对比上期：重号数（传号重复） + 邻号数（斜连号 ±1） + 连码组数</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas" style="height: 280px;">
+                            <canvas id="redPatternsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Upgraded: Sum / Span / AC Trend Chart (Full Width) -->
+                    <div class="chart-container full-width" data-category="patterns">
+                        <div class="chart-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                            <div class="chart-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3v18h18" />
+                                    <polyline points="22 6 12 16 2 12" />
+                                </svg>
+                            </div>
+                            <div class="chart-title-wrapper" style="flex: 1;">
+                                <h3 id="sumMetricTitle">红球和值走势（带均线参考）</h3>
+                                <p class="chart-description" id="sumMetricDesc">可自由切换和值、跨度（Max-Min）与 AC 值（复杂度）趋势分析</p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span style="font-size: 0.75rem; color: var(--slate-500);">指标：</span>
+                                <button class="sort-btn active" id="btnMetricSum" onclick="setSumMetric('sum')">和值 (Sum)</button>
+                                <button class="sort-btn" id="btnMetricSpan" onclick="setSumMetric('span')">跨度 (Span)</button>
+                                <button class="sort-btn" id="btnMetricAC" onclick="setSumMetric('ac')">AC值 (复杂度)</button>
+                            </div>
+                        </div>
+                        <div class="chart-canvas" style="height: 280px;">
+                            <canvas id="sumTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 012 Road Distribution Chart -->
+                    <div class="chart-container" data-category="patterns">
+                        <div class="chart-header">
+                            <div class="chart-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M8 12h8" />
+                                    <path d="M12 8v8" />
+                                </svg>
+                            </div>
+                            <div class="chart-title-wrapper">
+                                <h3>红球 012 路数论平衡走势</h3>
+                                <p class="chart-description">每期除3余数分布比例（0路: 03,06.. | 1路: 01,04.. | 2路: 02,05..）</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas">
+                            <canvas id="road012Chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Odd-Even Ratio Chart -->
+                    <div class="chart-container" data-category="patterns">
+                        <div class="chart-header">
+                            <div class="chart-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                                    <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                                </svg>
+                            </div>
+                            <div class="chart-title-wrapper">
+                                <h3>奇偶比例分布</h3>
+                                <p class="chart-description">红球奇偶比统计</p>
+                            </div>
+                        </div>
+                        <div class="chart-canvas">
+                            <canvas id="oddEvenChart"></canvas>
+                        </div>
+                    </div>
+
                     <!-- Zone Distribution Chart -->
-                    <div class="chart-container full-width">
+                    <div class="chart-container full-width" data-category="patterns">
                         <div class="chart-header">
                             <div class="chart-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

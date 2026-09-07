@@ -2160,3 +2160,37 @@ body::after {
         margin: 0 0.25rem;
     }
 }
+
+/* ===== Chart Category Filter Pills ===== */
+.chart-category-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.chart-cat-btn {
+    padding: 0.45rem 1.1rem;
+    border-radius: 9999px;
+    border: 1px solid var(--slate-200);
+    background: white;
+    color: var(--slate-600);
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.chart-cat-btn:hover {
+    background: var(--slate-50);
+    border-color: var(--slate-300);
+    color: var(--slate-900);
+}
+
+.chart-cat-btn.active {
+    background: var(--slate-900);
+    color: white;
+    border-color: var(--slate-900);
+    box-shadow: 0 2px 6px rgba(15,23,42,0.18);
+}

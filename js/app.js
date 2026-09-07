@@ -1285,7 +1285,278 @@ function renderOddEvenChart() {
     });
 }
 
-// 渲染和值走势图表
+// 计算红球跨度与 AC 值
+function calculateSpanAndAC(redBalls) {
+    const nums = redBalls.map(Number).sort((a, b) => a - b);
+    const span = nums[nums.length - 1] - nums[0];
+    
+    // AC 值（数字复杂度）：所有正差值不重复个数 - (r - 1)
+    const diffs = new Set();
+    for (let i = 0; i < nums.length; i++) {
+        for (let j = i + 1; j < nums.length; j++) {
+            diffs.add(nums[j] - nums[i]);
+        }
+    }
+    const ac = Math.max(0, diffs.size - (nums.length - 1));
+    return { span, ac };
+}
+
+// 计算红球三态：重号、邻号、连号
+function calculateRedPatterns(currentReds, prevReds) {
+    const cur = currentReds.map(Number).sort((a, b) => a - b);
+    
+    // 连码组数 (如 13-14)
+    let consecutivePairs = 0;
+    for (let i = 0; i < cur.length - 1; i++) {
+        if (cur[i + 1] - cur[i] === 1) {
+            consecutivePairs++;
+        }
+    }
+
+    if (!prevReds || prevReds.length === 0) {
+        return { repeatCount: 0, neighborCount: 0, consecutivePairs };
+    }
+
+    const prev = prevReds.map(Number);
+    // 重号：同时存在于本期和上期
+    const repeatCount = cur.filter(n => prev.includes(n)).length;
+
+    // 邻号/斜连号：在本期出号中，非重号但等于上期某个号码 ±1
+    const neighborCount = cur.filter(n => !prev.includes(n) && prev.some(p => Math.abs(p - n) === 1)).length;
+
+    return { repeatCount, neighborCount, consecutivePairs };
+}
+
+// 当前图表分类与形态指标
+let currentChartCategory = 'all';
+let currentSumMetric = 'sum'; // 'sum' | 'span' | 'ac'
+
+function filterChartCategory(cat) {
+    currentChartCategory = cat;
+    const btns = document.querySelectorAll('.chart-cat-btn');
+    btns.forEach(btn => {
+        if (btn.dataset.cat === cat) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    const containers = document.querySelectorAll('.analysis-charts-grid .chart-container');
+    containers.forEach(box => {
+        const itemCat = box.dataset.category;
+        if (cat === 'all' || itemCat === cat) {
+            box.style.display = '';
+        } else {
+            box.style.display = 'none';
+        }
+    });
+}
+window.filterChartCategory = filterChartCategory;
+
+function setSumMetric(metric) {
+    currentSumMetric = metric;
+    ['btnMetricSum', 'btnMetricSpan', 'btnMetricAC'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.remove('active');
+    });
+    if (metric === 'sum') document.getElementById('btnMetricSum')?.classList.add('active');
+    else if (metric === 'span') document.getElementById('btnMetricSpan')?.classList.add('active');
+    else if (metric === 'ac') document.getElementById('btnMetricAC')?.classList.add('active');
+
+    renderSumTrendChart();
+}
+window.setSumMetric = setSumMetric;
+
+// 渲染蓝球期号动态走势与振幅追踪图表
+function renderBlueTrendChart() {
+    let recentDraws = getFilteredLotteryData();
+    if (recentDraws.length === 0) return;
+    const chartEl = document.getElementById('blueTrendChart');
+    if (!chartEl) return;
+
+    if (chartInstances['blueTrendChart']) chartInstances['blueTrendChart'].destroy();
+
+    recentDraws = [...recentDraws].reverse();
+    const labels = recentDraws.map(d => d.period);
+    const blueNums = recentDraws.map(d => parseInt(d.blue_ball, 10));
+
+    // 计算相邻期位移振幅
+    const amplitudes = [0];
+    for (let i = 1; i < blueNums.length; i++) {
+        amplitudes.push(Math.abs(blueNums[i] - blueNums[i - 1]));
+    }
+
+    chartInstances['blueTrendChart'] = new Chart(chartEl, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    type: 'line',
+                    label: '开奖蓝球',
+                    data: blueNums,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: blueNums.map(n => n > 8 ? '#dc2626' : '#2563eb'),
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 1.5,
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7,
+                    tension: 0.25,
+                    fill: false,
+                    yAxisID: 'y'
+                },
+                {
+                    type: 'bar',
+                    label: '位移振幅',
+                    data: amplitudes,
+                    backgroundColor: 'rgba(139, 92, 246, 0.35)',
+                    hoverBackgroundColor: 'rgba(139, 92, 246, 0.75)',
+                    borderRadius: 3,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(15,23,42,0.92)',
+                    padding: 10,
+                    callbacks: {
+                        label: function(ctx) {
+                            if (ctx.dataset.type === 'line') {
+                                const val = ctx.raw;
+                                const size = val > 8 ? '大号(09-16)' : '小号(01-08)';
+                                const road = `${val % 3}路`;
+                                const oe = val % 2 === 1 ? '单' : '双';
+                                return `蓝球: ${val.toString().padStart(2, '0')} (${size} · ${oe} · ${road})`;
+                            } else {
+                                return `振幅位移: ${ctx.raw}`;
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    min: 1,
+                    max: 16,
+                    ticks: {
+                        stepSize: 2,
+                        callback: v => `${v}号`
+                    },
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.6)'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    min: 0,
+                    max: 15,
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        stepSize: 3,
+                        callback: v => `±${v}`
+                    }
+                }
+            }
+        }
+    });
+}
+
+// 渲染红球三态走势图表（重号 · 邻号 · 连号）
+function renderRedPatternsChart() {
+    let recentDraws = getFilteredLotteryData();
+    if (recentDraws.length === 0) return;
+    const chartEl = document.getElementById('redPatternsChart');
+    if (!chartEl) return;
+
+    if (chartInstances['redPatternsChart']) chartInstances['redPatternsChart'].destroy();
+
+    recentDraws = [...recentDraws].reverse();
+    const labels = recentDraws.map(d => d.period);
+    
+    const repeatData = [];
+    const neighborData = [];
+    const consecutiveData = [];
+
+    for (let i = 0; i < recentDraws.length; i++) {
+        const curReds = recentDraws[i].red_balls;
+        const prevReds = i > 0 ? recentDraws[i - 1].red_balls : null;
+        const p = calculateRedPatterns(curReds, prevReds);
+        repeatData.push(p.repeatCount);
+        neighborData.push(p.neighborCount);
+        consecutiveData.push(p.consecutivePairs);
+    }
+
+    chartInstances['redPatternsChart'] = new Chart(chartEl, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '重号(传号)',
+                    data: repeatData,
+                    backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                    borderRadius: 4
+                },
+                {
+                    type: 'line',
+                    label: '邻号(斜连)',
+                    data: neighborData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: '#3b82f6',
+                    pointBackgroundColor: '#3b82f6',
+                    pointRadius: 3,
+                    borderWidth: 2,
+                    tension: 0.2
+                },
+                {
+                    label: '连码组数',
+                    data: consecutiveData,
+                    backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(15,23,42,0.92)',
+                    padding: 10
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    title: { display: true, text: '个数 / 组数' }
+                }
+            }
+        }
+    });
+}
+
+// 渲染和值/跨度/AC值综合走势图表
 function renderSumTrendChart() {
     let recentDraws = getFilteredLotteryData();
     if (recentDraws.length === 0) return;
@@ -1296,28 +1567,65 @@ function renderSumTrendChart() {
 
     recentDraws = [...recentDraws].reverse();
     const labels = recentDraws.map(draw => draw.period);
-    const sums = recentDraws.map(draw => draw.red_balls.reduce((acc, ball) => acc + parseInt(ball), 0));
-    const avgSum = sums.reduce((a, b) => a + b, 0) / sums.length;
+
+    let values, avgValue, metricLabel, lineColor, bgColor, titleText, descText;
+
+    if (currentSumMetric === 'span') {
+        values = recentDraws.map(draw => {
+            const { span } = calculateSpanAndAC(draw.red_balls);
+            return span;
+        });
+        avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+        metricLabel = '红球跨度 (Span)';
+        lineColor = '#0d9488';
+        bgColor = 'rgba(13, 148, 136, 0.1)';
+        titleText = '红球跨度走势（Max - Min）';
+        descText = '跨度衡量首尾距离，黄金正常区间为 20~30，统计均值约 25';
+    } else if (currentSumMetric === 'ac') {
+        values = recentDraws.map(draw => {
+            const { ac } = calculateSpanAndAC(draw.red_balls);
+            return ac;
+        });
+        avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+        metricLabel = '红球 AC 值 (数字复杂度)';
+        lineColor = '#8b5cf6';
+        bgColor = 'rgba(139, 92, 246, 0.1)';
+        titleText = '红球 AC 值（复杂度）走势';
+        descText = 'AC值衡量离散随机度，黄金区间为 7~11（过低说明等差分布明显）';
+    } else {
+        values = recentDraws.map(draw => draw.red_balls.reduce((acc, ball) => acc + parseInt(ball, 10), 0));
+        avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+        metricLabel = '红球和值 (Sum)';
+        lineColor = '#eab308';
+        bgColor = 'rgba(234, 179, 8, 0.1)';
+        titleText = '红球和值走势（带均线参考）';
+        descText = '近期红球总和变化趋势（理论均值约 102，常见区间 90~120）';
+    }
+
+    const titleEl = document.getElementById('sumMetricTitle');
+    if (titleEl) titleEl.textContent = titleText;
+    const descEl = document.getElementById('sumMetricDesc');
+    if (descEl) descEl.textContent = descText;
 
     chartInstances['sumTrendChart'] = new Chart(chartEl, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: '红球和值',
-                data: sums,
-                borderColor: '#eab308',
-                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                label: metricLabel,
+                data: values,
+                borderColor: lineColor,
+                backgroundColor: bgColor,
                 borderWidth: 2,
-                pointBackgroundColor: '#eab308',
+                pointBackgroundColor: lineColor,
                 pointRadius: 3,
                 fill: true,
                 tension: 0.3
             }, {
-                label: '均值',
-                data: Array(labels.length).fill(avgSum),
+                label: `平均值 (${avgValue.toFixed(1)})`,
+                data: Array(labels.length).fill(avgValue),
                 borderColor: '#94a3b8',
-                borderWidth: 1,
+                borderWidth: 1.5,
                 borderDash: [5, 5],
                 pointRadius: 0,
                 fill: false
@@ -1329,6 +1637,82 @@ function renderSumTrendChart() {
             interaction: {
                 intersect: false,
                 mode: 'index'
+            }
+        }
+    });
+}
+
+// 渲染 012 路数论平衡走势图表
+function renderRoad012Chart() {
+    let recentDraws = getFilteredLotteryData();
+    if (recentDraws.length === 0) return;
+    const chartEl = document.getElementById('road012Chart');
+    if (!chartEl) return;
+
+    if (chartInstances['road012Chart']) chartInstances['road012Chart'].destroy();
+
+    recentDraws = [...recentDraws].reverse();
+    const labels = recentDraws.map(draw => draw.period);
+
+    const road0 = [];
+    const road1 = [];
+    const road2 = [];
+
+    recentDraws.forEach(draw => {
+        const nums = draw.red_balls.map(Number);
+        road0.push(nums.filter(n => n % 3 === 0).length);
+        road1.push(nums.filter(n => n % 3 === 1).length);
+        road2.push(nums.filter(n => n % 3 === 2).length);
+    });
+
+    chartInstances['road012Chart'] = new Chart(chartEl, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '0路 (余0)',
+                    data: road0,
+                    backgroundColor: '#f59e0b',
+                    stack: 'road'
+                },
+                {
+                    label: '1路 (余1)',
+                    data: road1,
+                    backgroundColor: '#3b82f6',
+                    stack: 'road'
+                },
+                {
+                    label: '2路 (余2)',
+                    data: road2,
+                    backgroundColor: '#10b981',
+                    stack: 'road'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { stacked: true },
+                y: {
+                    stacked: true,
+                    min: 0,
+                    max: 6,
+                    ticks: { stepSize: 1 }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        footer: function(items) {
+                            const r0 = items.find(i => i.datasetIndex === 0)?.raw || 0;
+                            const r1 = items.find(i => i.datasetIndex === 1)?.raw || 0;
+                            const r2 = items.find(i => i.datasetIndex === 2)?.raw || 0;
+                            return `012路比: ${r0}:${r1}:${r2}`;
+                        }
+                    }
+                }
             }
         }
     });
@@ -1346,7 +1730,7 @@ function renderZoneDistributionChart() {
     const zones = { '01-11': 0, '12-22': 0, '23-33': 0 };
     dataList.forEach(draw => {
         draw.red_balls.forEach(ball => {
-            const num = parseInt(ball);
+            const num = parseInt(ball, 10);
             if (num <= 11) zones['01-11']++;
             else if (num <= 22) zones['12-22']++;
             else zones['23-33']++;
@@ -1371,8 +1755,7 @@ function renderZoneDistributionChart() {
     });
 }
 
-// 渲染所有分析图表
-
+// 渲染频率 vs 遗漏散点图
 function renderScatterChart() {
     const dataList = getFilteredLotteryData();
     if (dataList.length === 0) return;
@@ -1398,13 +1781,13 @@ function renderScatterChart() {
     const maxFreq = Math.max(...scatterData.map(d => d.x));
     const maxOmission = Math.max(...scatterData.map(d => d.y));
 
-    // Color: hot+low omission = red, cold+high omission = purple/gray
+    // 散点颜色映射
     function dotColor(x, y) {
         const heatRatio = x / maxFreq;
         const coldRatio = y / maxOmission;
-        if (coldRatio > 0.6) return 'rgba(124,58,237,0.85)';  // very cold - purple warning
-        if (heatRatio > 0.7) return 'rgba(220,38,38,0.85)';   // very hot - red
-        return 'rgba(100,116,139,0.6)';                         // normal - gray
+        if (coldRatio > 0.6) return 'rgba(124,58,237,0.85)';  // 极冷号 - 紫色预警
+        if (heatRatio > 0.7) return 'rgba(220,38,38,0.85)';   // 极热号 - 红色
+        return 'rgba(100,116,139,0.6)';                         // 常态 - 灰色
     }
 
     chartInstances['scatterChart'] = new Chart(chartEl, {
@@ -1458,15 +1841,24 @@ function renderScatterChart() {
     });
 }
 
+// 渲染所有分析图表
 function renderAllAnalysisCharts() {
     renderStatisticsCards();
     renderOmissionPanel();
     renderFrequencyChart();
     renderBlueFrequencyChart();
-    renderOddEvenChart();
+    renderBlueTrendChart();
+    renderRedPatternsChart();
     renderSumTrendChart();
+    renderRoad012Chart();
+    renderOddEvenChart();
     renderZoneDistributionChart();
     renderScatterChart();
+
+    // 维持当前分类过滤状态
+    if (typeof filterChartCategory === 'function') {
+        filterChartCategory(currentChartCategory);
+    }
 }
 
 // 设置事件监听
