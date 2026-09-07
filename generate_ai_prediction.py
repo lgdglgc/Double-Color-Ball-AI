@@ -7,9 +7,24 @@
 import json
 import os
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
+try:
+    from zoneinfo import ZoneInfo
+    BEIJING_TZ = ZoneInfo("Asia/Shanghai")
+except ImportError:
+    from datetime import timezone
+    BEIJING_TZ = timezone(timedelta(hours=8))
 from openai import OpenAI
 from typing import Dict, Any
+
+# 解决 Windows 控制台打印 emoji 报 UnicodeEncodeError 的跨平台问题
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 # ==================== 配置区 ====================
 # API 配置（通过环境变量设置）
@@ -35,6 +50,7 @@ LOTTERY_HISTORY_FILE = os.path.join(SCRIPT_DIR, "data", "lottery_history.json")
 AI_PREDICTIONS_FILE = os.path.join(SCRIPT_DIR, "data", "ai_predictions.json")
 PREDICTIONS_HISTORY_FILE = os.path.join(SCRIPT_DIR, "data", "predictions_history.json")
 PROMPT_FILE = os.path.join(SCRIPT_DIR, "doc", "prompt2.0.md")
+META_PROMPT_FILE = os.path.join(SCRIPT_DIR, "prompts", "meta_prompt_template.txt")
 
 # ==================== 工具函数 ====================
 
@@ -56,12 +72,18 @@ def load_lottery_history() -> Dict[str, Any]:
         print(f"❌ 加载历史数据失败: {str(e)}")
         raise
 
-def get_next_draw_date() -> str:
+def get_next_draw_date(lottery_data: Dict[str, Any] = None) -> str:
     """
-    根据双色球开奖规则（每周二、四、日 21:15）计算下期开奖日期
+    根据双色球开奖规则（每周二、四、日 21:15）计算下期开奖日期（按北京时间）
     返回 YYYY-MM-DD 格式
     """
-    today = datetime.now()
+    # 优先从开奖数据自带的 next_draw 中直接获取
+    if lottery_data:
+        next_draw = lottery_data.get("next_draw", {})
+        if next_draw.get("next_date"):
+            return next_draw["next_date"]
+
+    today = datetime.now(BEIJING_TZ)
     weekday = today.weekday()  # 0=周一, 1=周二, 2=周三, 3=周四, 4=周五, 5=周六, 6=周日
 
     # 开奖日: 周二(1), 周四(3), 周日(6)
@@ -198,16 +220,91 @@ def validate_prediction(prediction: Dict[str, Any]) -> bool:
 def load_meta_prompt_template() -> str:
     """加载 Meta AI Prompt 模板"""
     try:
-        with open("prompts/meta_prompt_template.txt", "r", encoding="utf-8") as f:
+        with open(META_PROMPT_FILE, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        print("❌ 找不到 prompts/meta_prompt_template.txt")
+        print(f"❌ 找不到 {META_PROMPT_FILE}")
         return ""
 
+def call_single_model_worker(
+    client: OpenAI,
+    model_config: Dict[str, str],
+    prompt_template: str,
+    target_period: str,
+    target_date: str,
+    history_json: str,
+    prediction_date: str
+) -> Dict[str, Any]:
+    """单模型预测工作函数（支持独立重试与多线程并发）"""
+    max_retries = 3
+    system_instruction = "你是一个专业的彩票数据分析师，擅长基于历史数据进行模式分析和预测。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
+    full_prompt = system_instruction + prompt_template.replace(
+        "{target_period}", str(target_period)
+    ).replace(
+        "{target_date}", str(target_date)
+    ).replace(
+        "{lottery_history}", str(history_json)
+    ).replace(
+        "{prediction_date}", str(prediction_date)
+    ).replace(
+        "{model_id}", str(model_config['model_id'])
+    ).replace(
+        "{model_name}", str(model_config['name'])
+    )
+
+    model_id_lower = model_config['id'].lower()
+    supports_temp = not any(k in model_id_lower for k in ["gemini", "thinking", "o1", "o3"])
+
+    for attempt in range(max_retries):
+        try:
+            if attempt > 0:
+                print(f"  🔄 正在重试 {model_config['name']} (第 {attempt + 1} 次)...")
+            else:
+                print(f"  ⏳ 正在并发调用 {model_config['name']} 模型...")
+
+            req_kwargs = {
+                "model": model_config['id'],
+                "messages": [{"role": "user", "content": full_prompt}]
+            }
+            if supports_temp:
+                req_kwargs["temperature"] = 0.8
+
+            try:
+                response = client.chat.completions.create(**req_kwargs)
+            except Exception as api_err:
+                # 若代理或模型因 temperature 报错 400，自动剥离 temperature 重试
+                if "temperature" in str(api_err).lower() and "temperature" in req_kwargs:
+                    print(f"  ⚠️  {model_config['name']} 不支持自定义 temperature，剥离后重试...")
+                    supports_temp = False
+                    req_kwargs.pop("temperature")
+                    response = client.chat.completions.create(**req_kwargs)
+                else:
+                    raise api_err
+
+            response_text = response.choices[0].message.content.strip()
+            json_text = extract_json_from_response(response_text)
+            prediction = json.loads(json_text)
+
+            # 验证数据
+            if validate_prediction(prediction):
+                print(f"  ✓ {model_config['name']} 预测完成并通过验证")
+                return prediction
+            else:
+                print(f"  ✗ {model_config['name']} 数据格式验证未通过")
+                if attempt < max_retries - 1:
+                    time.sleep(2)
+
+        except Exception as e:
+            print(f"  ✗ 处理 {model_config['name']} 时失败: {str(e)}")
+            if attempt < max_retries - 1:
+                time.sleep(2)
+
+    return None
+
 def generate_predictions() -> Dict[str, Any]:
-    """生成所有模型的预测"""
+    """生成所有模型的预测（多线程并行加速）"""
     print("\n" + "="*50)
-    print("🤖 双色球 AI 预测自动生成")
+    print("🤖 双色球 AI 预测自动生成 (MoE 并发增强版)")
     print("="*50 + "\n")
 
     # 加载 Prompt 模板
@@ -243,82 +340,51 @@ def generate_predictions() -> Dict[str, Any]:
     history_data = lottery_data.get("data", [])[:30]
     history_json = json.dumps(history_data, ensure_ascii=False, indent=2)
 
-    # 预测日期：根据开奖规则计算下期开奖日期
-    prediction_date = get_next_draw_date()
+    # 预测日期：优先读取 next_draw，并确保时区为北京时间
+    prediction_date = get_next_draw_date(lottery_data)
     print(f"📅 预测日期: {prediction_date}\n")
 
     # 初始化 OpenAI 客户端
     client = get_openai_client()
 
-    # 存储所有模型的预测
-    all_predictions = []
+    # 并行多线程调用所有基础模型
+    print("🔮 开始并发调用基础模型矩阵...\n")
+    results_by_id = {}
+    max_workers = min(len(MODELS), 5)
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(
+                call_single_model_worker,
+                client,
+                model_cfg,
+                prompt_template,
+                target_period,
+                target_date,
+                history_json,
+                prediction_date
+            ): model_cfg
+            for model_cfg in MODELS
+        }
 
-    # 逐个调用模型
-    print("🔮 开始生成预测...\n")
-    for model_config in MODELS:
-        max_retries = 3
-        for attempt in range(max_retries):
+        for future in as_completed(futures):
+            cfg = futures[future]
             try:
-                if attempt > 0:
-                    print(f"  🔄 正在重试 {model_config['name']} (第 {attempt + 1} 次)...")
-                
-                # 构建 prompt
-                system_instruction = "你是一个专业的彩票数据分析师，擅长基于历史数据进行模式分析和预测。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
-                
-                full_prompt = system_instruction + prompt_template.replace(
-                    "{target_period}", str(target_period)
-                ).replace(
-                    "{target_date}", str(target_date)
-                ).replace(
-                    "{lottery_history}", str(history_json)
-                ).replace(
-                    "{prediction_date}", str(prediction_date)
-                ).replace(
-                    "{model_id}", str(model_config['model_id'])
-                ).replace(
-                    "{model_name}", str(model_config['name'])
-                )
-
-                # 调用模型
-                print(f"  ⏳ 正在调用 {model_config['name']} 模型...")
-                
-                req_kwargs = {
-                    "model": model_config['id'],
-                    "messages": [{"role": "user", "content": full_prompt}]
-                }
-                # Gemini 对参数极其严格，部分中转代理传递 temperature 会导致 INVALID_ARGUMENT 400 错误
-                if "gemini" not in model_config['id'].lower():
-                    req_kwargs["temperature"] = 0.8
-
-                response = client.chat.completions.create(**req_kwargs)
-
-                response_text = response.choices[0].message.content.strip()
-                json_text = extract_json_from_response(response_text)
-                prediction = json.loads(json_text)
-
-                # 验证数据
-                if validate_prediction(prediction):
-                    all_predictions.append(prediction)
-                    print(f"  ✓ 验证通过\n")
-                    break  # 成功，跳出重试循环
-                else:
-                    print(f"  ✗ 验证失败")
-                    if attempt < max_retries - 1:
-                        import time
-                        time.sleep(2)
+                pred = future.result()
+                if pred:
+                    results_by_id[cfg['id']] = pred
             except Exception as e:
-                print(f"  ✗ 处理 {model_config['name']} 时失败: {str(e)}")
-                if attempt < max_retries - 1:
-                    import time
-                    time.sleep(2)
+                print(f"  ❌ 模型 {cfg['name']} 并发线程发生异常: {e}")
+
+    # 按 MODELS 原始预设顺序重组预测结果
+    all_predictions = [results_by_id[m['id']] for m in MODELS if m['id'] in results_by_id]
 
     # 构建最终输出
     if not all_predictions:
-        print("❌ 没有成功生成任何预测")
+        print("❌ 没有成功生成任何基础模型预测")
         return None
 
     # ============== Meta AI 混合专家汇总分析 ==============
-    print("\n🧠 开始 Meta AI 汇总分析...")
+    print("\n🧠 开始 Meta AI 超级裁判汇总分析...")
     meta_prompt_template = load_meta_prompt_template()
     meta_prediction = None
     if meta_prompt_template:
@@ -335,7 +401,7 @@ def generate_predictions() -> Dict[str, Any]:
                     "description": group.get('reasoning', group.get('description', ''))[:100]
                 })
         base_predictions_summary = json.dumps(summary_data, ensure_ascii=False, indent=2)
-        
+
         system_instruction = "你是一个“超级裁判 AI”及双色球究极分析师。请严格按照要求返回 JSON 格式数据，不要有任何额外的解释或说明。\n\n"
         full_meta_prompt = system_instruction + meta_prompt_template.replace(
             "{lottery_history}", str(history_json)
@@ -345,22 +411,39 @@ def generate_predictions() -> Dict[str, Any]:
 
         # 优先使用 Claude Opus 或 GPT-120B 作为 Meta 模型
         meta_model_config = next((m for m in MODELS if "opus" in m["id"].lower()), MODELS[0])
-        
+
         print(f"  ⏳ 正在调用超级裁判模型 {meta_model_config['name']}...")
         max_meta_retries = 3
+        meta_model_lower = meta_model_config['id'].lower()
+        supports_meta_temp = not any(k in meta_model_lower for k in ["gemini", "thinking", "o1", "o3"])
+
         for attempt in range(max_meta_retries):
             try:
                 if attempt > 0:
                     print(f"  🔄 正在重试 Meta AI (第 {attempt + 1} 次)...")
-                meta_response = client.chat.completions.create(
-                    model=meta_model_config['id'],
-                    messages=[{"role": "user", "content": full_meta_prompt}],
-                    temperature=0.7
-                )
+
+                meta_req_kwargs = {
+                    "model": meta_model_config['id'],
+                    "messages": [{"role": "user", "content": full_meta_prompt}]
+                }
+                if supports_meta_temp:
+                    meta_req_kwargs["temperature"] = 0.7
+
+                try:
+                    meta_response = client.chat.completions.create(**meta_req_kwargs)
+                except Exception as meta_call_err:
+                    if "temperature" in str(meta_call_err).lower() and "temperature" in meta_req_kwargs:
+                        print(f"  ⚠️  Meta AI 模型不支持自定义 temperature，剥离后重试...")
+                        supports_meta_temp = False
+                        meta_req_kwargs.pop("temperature")
+                        meta_response = client.chat.completions.create(**meta_req_kwargs)
+                    else:
+                        raise meta_call_err
+
                 meta_json_text = extract_json_from_response(meta_response.choices[0].message.content.strip())
                 meta_prediction = json.loads(meta_json_text)
-                
-                # 简单验证
+
+                # 验证关键结构
                 if "five_single_predictions" in meta_prediction and "dantuo_prediction" in meta_prediction and "compound_prediction" in meta_prediction:
                     print("  ✓ Meta AI 分析完成！")
                     break
@@ -370,7 +453,6 @@ def generate_predictions() -> Dict[str, Any]:
             except Exception as e:
                 print(f"  ✗ Meta AI 分析失败: {e}")
                 meta_prediction = None
-                import time
                 time.sleep(2)
 
     result = {
@@ -380,7 +462,7 @@ def generate_predictions() -> Dict[str, Any]:
         "models": all_predictions
     }
 
-    print(f"✅ 成功生成 {len(all_predictions)}/{len(MODELS)} 个模型的预测\n")
+    print(f"✅ 成功生成 {len(all_predictions)}/{len(MODELS)} 个基础模型与 Meta AI 预测\n")
     return result
 
 def calculate_hit_result(prediction_group: Dict[str, Any], actual_result: Dict[str, Any]) -> Dict[str, Any]:

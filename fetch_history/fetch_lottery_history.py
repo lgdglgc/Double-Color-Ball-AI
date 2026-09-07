@@ -24,6 +24,18 @@ import sys
 import os
 from datetime import datetime, timedelta
 
+# 解决 Windows 控制台打印 emoji 报 UnicodeEncodeError 的跨平台问题
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(SCRIPT_DIR)
+DEFAULT_OUTPUT_FILE = os.path.join(SCRIPT_DIR, "lottery_data.json")
+WEB_DATA_PATH = os.path.join(ROOT_DIR, "data", "lottery_history.json")
+
 
 class LotteryDataFetcher:
     """双色球数据获取器"""
@@ -31,7 +43,7 @@ class LotteryDataFetcher:
     def __init__(self):
         self.base_url = "https://datachart.500.com/ssq/history/history.shtml"
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
@@ -301,14 +313,12 @@ class LotteryDataFetcher:
                 print(f"\n数据已成功保存到 {filename}")
                 print(f"共保存 {len(merged_data)} 期数据")
 
-                # 同时更新到 ../data/lottery_history.json
+                # 同时更新到 data/lottery_history.json
                 try:
-                    web_data_path = os.path.join(os.path.dirname(filename), '..', 'data', 'lottery_history.json')
                     formatted_data = self.format_for_web(merged_data)
-
-                    with open(web_data_path, 'w', encoding='utf-8') as f:
+                    with open(WEB_DATA_PATH, 'w', encoding='utf-8') as f:
                         json.dump(formatted_data, f, ensure_ascii=False, indent=2)
-                    print(f"✓ 已同步到网页数据文件: {web_data_path}")
+                    print(f"✓ 已同步到网页数据文件: {WEB_DATA_PATH}")
                 except Exception as e:
                     print(f"⚠️  同步到网页数据失败: {e}")
 
@@ -321,7 +331,7 @@ class LotteryDataFetcher:
         except Exception as e:
             print(f"保存文件时出错: {e}")
     
-    def fetch_and_save(self, output_file="lottery_data.json", preserve_history=True):
+    def fetch_and_save(self, output_file=None, preserve_history=True):
         """
         获取并保存数据的主函数
 
@@ -329,6 +339,9 @@ class LotteryDataFetcher:
             output_file: 输出文件名
             preserve_history: 是否保留并合并历史数据
         """
+        if output_file is None:
+            output_file = DEFAULT_OUTPUT_FILE
+
         print("=" * 50)
         print("双色球历史开奖数据获取工具")
         print("=" * 50)
@@ -364,8 +377,8 @@ def main():
     """主函数"""
     fetcher = LotteryDataFetcher()
     
-    # 可以自定义输出文件名
-    output_file = "lottery_data.json"
+    # 默认输出到 fetch_history 目录下的 lottery_data.json
+    output_file = DEFAULT_OUTPUT_FILE
     
     if len(sys.argv) > 1:
         output_file = sys.argv[1]
@@ -374,7 +387,8 @@ def main():
     
     if success:
         print("\n✓ 数据获取完成！")
-        print(f"✓ 文件位置: {output_file}")
+        print(f"✓ 本地数据: {output_file}")
+        print(f"✓ 网页数据: {WEB_DATA_PATH}")
     else:
         print("\n✗ 数据获取失败")
         sys.exit(1)

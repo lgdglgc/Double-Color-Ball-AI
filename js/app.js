@@ -58,23 +58,24 @@ async function safeLoad(loader) {
 // 倒计时定时器引用
 let countdownInterval = null;
 
-// 倒计时函数
+// 倒计时函数（精确按北京时间 UTC+8 计算）
 function renderCountdown(drawDateStr) {
     const countdownEl = document.getElementById('heroCountdown');
-    if (!countdownEl) return;
+    if (!countdownEl || !drawDateStr) return;
 
     if (countdownInterval) {
         clearInterval(countdownInterval);
     }
 
     const updateCountdown = () => {
-        const drawTime = new Date(drawDateStr);
-        // 如果只有日期，通常双色球开奖是在当天晚上 21:15，我们补充具体时间以便高精倒计时
+        // 双色球开奖是在当天晚上 21:15（北京时间）
+        let targetIso = drawDateStr;
         if (drawDateStr.indexOf(' ') === -1 && drawDateStr.indexOf('T') === -1) {
-            drawTime.setHours(21, 15, 0, 0);
+            targetIso = `${drawDateStr.trim()}T21:15:00+08:00`;
         }
+        const drawTime = new Date(targetIso);
         const now = new Date();
-        const diff = drawTime - now;
+        const diff = drawTime.getTime() - now.getTime();
 
         if (diff <= 0) {
             countdownEl.textContent = '即将开奖';
@@ -737,11 +738,15 @@ function renderAccuracyChart() {
     const chartEl = document.getElementById('accuracyChart');
     if (!chartEl) return;
 
+    if (chartInstances['accuracyChart']) {
+        chartInstances['accuracyChart'].destroy();
+    }
+
     // 准备图表数据
     const chartData = prepareChartData();
 
     // 使用Chart.js渲染
-    new Chart(chartEl, {
+    chartInstances['accuracyChart'] = new Chart(chartEl, {
         type: 'line',
         data: {
             labels: chartData.labels,
@@ -843,6 +848,9 @@ function prepareChartData() {
     return { labels, datasets };
 }
 
+// 历史回溯展示条数控制
+let accuracyDisplayLimit = 10;
+
 // 渲染准确度卡片
 function renderAccuracyCards() {
     if (!appData.predictionsHistory) return;
@@ -853,11 +861,43 @@ function renderAccuracyCards() {
     // 清空现有内容
     containerEl.innerHTML = '';
 
-    // 渲染每个记录
-    appData.predictionsHistory.predictions_history.forEach((record, index) => {
+    const records = appData.predictionsHistory.predictions_history || [];
+    const visibleRecords = records.slice(0, accuracyDisplayLimit);
+
+    // 渲染可视记录
+    visibleRecords.forEach((record, index) => {
         const card = Components.createAccuracyCard(record, index);
         containerEl.appendChild(card);
     });
+
+    // 如果还有更多记录，添加“加载更多”按钮
+    if (records.length > accuracyDisplayLimit) {
+        const loadMoreBox = document.createElement('div');
+        loadMoreBox.style.display = 'flex';
+        loadMoreBox.style.justifyContent = 'center';
+        loadMoreBox.style.margin = '1.5rem 0';
+
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.className = 'nav-item';
+        loadMoreBtn.style.padding = '0.65rem 1.75rem';
+        loadMoreBtn.style.borderRadius = '9999px';
+        loadMoreBtn.style.border = '1px solid var(--slate-300)';
+        loadMoreBtn.style.background = 'white';
+        loadMoreBtn.style.color = 'var(--slate-700)';
+        loadMoreBtn.style.fontWeight = '600';
+        loadMoreBtn.style.fontSize = '0.875rem';
+        loadMoreBtn.style.cursor = 'pointer';
+        loadMoreBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.04)';
+        loadMoreBtn.textContent = `查看更多历史回溯 (已显示 ${visibleRecords.length} / ${records.length} 期)`;
+
+        loadMoreBtn.addEventListener('click', () => {
+            accuracyDisplayLimit += 15;
+            renderAccuracyCards();
+        });
+
+        loadMoreBox.appendChild(loadMoreBtn);
+        containerEl.appendChild(loadMoreBox);
+    }
 }
 
 // 渲染历史表格

@@ -2,14 +2,19 @@ name: Generate AI Prediction
 
 on:
   schedule:
-    # 每周一、三、五 UTC 00:00（北京时间 08:00）自动运行
+    # 每周一、三、五 UTC 00:00（北京时间 08:00）兜底运行
     # 对应开奖后一天：周日开奖→周一，周二开奖→周三，周四开奖→周五
     - cron: '0 0 * * 1,3,5'
-  workflow_dispatch: # 也支持手动触发
+  workflow_dispatch: # 支持手动触发
+  workflow_run: # 当爬虫更新开奖数据成功后，立即联动触发生成新一期预测
+    workflows: ["Update Lottery Data"]
+    types:
+      - completed
 
 jobs:
   generate-prediction:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
 

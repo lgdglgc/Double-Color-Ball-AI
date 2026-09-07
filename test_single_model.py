@@ -4,7 +4,15 @@
 import json
 import os
 import sys
+import tempfile
 from openai import OpenAI
+
+# 解决 Windows 控制台打印 emoji 报 UnicodeEncodeError 的跨平台问题
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 # API 配置（通过环境变量设置）
 BASE_URL = os.environ.get("AI_BASE_URL") or "https://aihubmix.com/v1"
@@ -38,22 +46,28 @@ history_json = json.dumps(history_data, ensure_ascii=False, indent=2)
 print(f"🎯 目标期号: {target_period}")
 print(f"📅 开奖日期: {target_date}\n")
 
-# 构建 prompt
+# 构建 prompt（使用 replace 避免 JSON 括号被误识别为 format 占位符）
 print("🔧 构建 Prompt...")
-prompt = prompt_template.format(
-    target_period=target_period,
-    target_date=target_date,
-    lottery_history=history_json,
-    prediction_date="2025-11-18",
-    model_id="SSB-Team-001",
-    model_name="GPT-5"
+prompt = prompt_template.replace(
+    "{target_period}", str(target_period)
+).replace(
+    "{target_date}", str(target_date)
+).replace(
+    "{lottery_history}", str(history_json)
+).replace(
+    "{prediction_date}", "2026-07-28"
+).replace(
+    "{model_id}", "GPT-120B-OSS"
+).replace(
+    "{model_name}", "GPT 120B"
 )
 print(f"✅ Prompt 构建成功 ({len(prompt)} 字符)\n")
 
-# 保存 prompt 用于调试
-with open('/tmp/test_prompt.txt', 'w', encoding='utf-8') as f:
+# 保存 prompt 用于调试（使用系统标准临时目录）
+debug_prompt_path = os.path.join(tempfile.gettempdir(), "test_prompt.txt")
+with open(debug_prompt_path, 'w', encoding='utf-8') as f:
     f.write(prompt)
-print("💾 Prompt 已保存到 /tmp/test_prompt.txt\n")
+print(f"💾 Prompt 已保存到 {debug_prompt_path}\n")
 
 # 调用 API
 print("🤖 调用 GPT-5 模型...")

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ssq-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ssq-ai-web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:80"
+    volumes:
+      # 将宿主机数据目录挂载进容器（只读），宿主机定时更新数据时网页无需重建镜像即可实时读取
+      - ./data:/usr/share/nginx/html/data:ro
+    environment:
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

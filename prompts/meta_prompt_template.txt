@@ -4,7 +4,7 @@
 
 ## 核心要求
 
-- 必须输出纯JSON格式，不含任何额外文字，且绝对不能用 ```json 或 ``` 标记来包裹它。输出的开头首字符必须直接是左大括号 {{，尾字符必须直接是右大括号 }}。
+- 必须输出纯JSON格式，不含任何额外文字，且绝对不能用 ```json 或 ``` 标记来包裹它。输出的开头首字符必须直接是左大括号 {，尾字符必须直接是右大括号 }。
 - 为下一期（当前期号+日期）给出终极预测
 - 严格遵循数据驱动与量化方法
 - **候选池限定**：最终生成的 5 注单式、复式、胆拖号码，必须 100% 从“其他AI基础预测汇总”中所有模型推荐的红球池 and 蓝球池中筛选、组合而来，绝对不能凭空捏造候选池之外的号码。
@@ -23,7 +23,7 @@
 ```
 {base_predictions_summary}
 ```
-（格式：[{{group_id, strategy, red_balls[], blue_ball, description}}, ...]）
+（格式：[{"group_id": ..., "strategy": ..., "red_balls": [...], "blue_ball": "XX", "description": ...}, ...]）
 
 ## 数据预处理（自动完成）
 
@@ -57,40 +57,40 @@
 **必须只返回纯JSON**（无markdown、无注释）：
 
 ```json
-{{
+{
   "analysis_reasoning": "限150字内专业点评（包含历史趋势+AI共识+裁判理由）",
   "five_single_predictions": [
-    {{
+    {
       "red_balls": ["XX", "XX", "XX", "XX", "XX", "XX"],  // 6个红球，从小到大排序
       "blue_ball": "XX"                                  // 1个蓝球
-    }},
-    {{
+    },
+    {
       "red_balls": ["XX", "XX", "XX", "XX", "XX", "XX"],
       "blue_ball": "XX"
-    }},
-    {{
+    },
+    {
       "red_balls": ["XX", "XX", "XX", "XX", "XX", "XX"],
       "blue_ball": "XX"
-    }},
-    {{
+    },
+    {
       "red_balls": ["XX", "XX", "XX", "XX", "XX", "XX"],
       "blue_ball": "XX"
-    }},
-    {{
+    },
+    {
       "red_balls": ["XX", "XX", "XX", "XX", "XX", "XX"],
       "blue_ball": "XX"
-    }}
+    }
   ],
-  "dantuo_prediction": {{
+  "dantuo_prediction": {
     "dan_reds": ["XX", "XX", "XX", "XX"],                // 正好 4 个胆码，从小到大排序
     "tuo_reds": ["XX", "XX", "XX", "XX"],                // 正好 4 个拖码，从小到大排序
     "blue_balls": ["XX", "XX"]                           // 正好 2 个蓝球，从小到大排序
-  }},
-  "compound_prediction": {{
+  },
+  "compound_prediction": {
     "red_balls": ["XX", "XX", "XX", "XX", "XX", "XX", "XX", "XX"], // 正好 8 个红球复式大底，从小到大
     "blue_balls": ["XX", "XX"]                                     // 正好 2 个蓝球复式大底，从小到大
-  }}
-}}
+  }
+}
 ```
 
 **格式规范**
