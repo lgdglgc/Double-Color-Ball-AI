@@ -2194,3 +2194,111 @@ body::after {
     border-color: var(--slate-900);
     box-shadow: 0 2px 6px rgba(15,23,42,0.18);
 }
+
+/* ===== Tier Headers & Tactics Box ===== */
+.tier-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--slate-200);
+}
+
+.tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    letter-spacing: 0.02em;
+}
+
+.tier-badge.green {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.tier-badge.amber {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.tier-badge.red {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.tier-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--slate-800);
+}
+
+.tier-desc {
+    font-size: 0.75rem;
+    color: var(--slate-400);
+    margin-left: auto;
+}
+
+.ai-tactics-box {
+    margin: 0 1.25rem 1.25rem 1.25rem;
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid var(--slate-200);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    align-items: center;
+}
+
+.tactic-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    white-space: nowrap;
+}
+
+.tactic-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--slate-700);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.kill-ball {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    position: relative;
+}
+
+.kill-ball.red {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    text-decoration: line-through;
+}
+
+.kill-ball.blue {
+    background: #dbeafe;
+    color: #2563eb;
+    border: 1px solid #93c5fd;
+    text-decoration: line-through;
+}
