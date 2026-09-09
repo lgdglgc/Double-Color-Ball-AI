@@ -950,6 +950,7 @@ function prepareChartData() {
         'Gemini 2.5': '#3b82f6',
         'Gemini 3.1 Pro': '#3b82f6',
         'Gemini 3.8 Flash': '#06b6d4',
+        'Grok 4.20': '#e11d48',
         'Grok 4.3': '#e11d48',
         'DeepSeek R1': '#f59e0b',
         'Deep Learning Prediction Model': '#f59e0b'
