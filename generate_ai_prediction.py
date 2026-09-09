@@ -42,7 +42,7 @@ MODELS = [
     {"id": "gemini-3.1-pro-low", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
     {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"},
     {"id": "gemini-3.8-flash-high", "name": "Gemini 3.8 Flash", "model_id": "Gemini-3.8-Flash"},
-    {"id": "grok-4.20-fast", "name": "Grok 4.20", "model_id": "Grok-4.20-Fast"},
+    {"id": "gemini-3.7-flash-high", "name": "Gemini 3.7 Flash", "model_id": "Gemini-3.7-Flash"},
 ]
 
 # 文件路径

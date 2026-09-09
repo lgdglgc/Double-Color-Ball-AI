@@ -32,7 +32,7 @@
 ## ✨ 核心特性
 
 - 🤖 **6 大顶级 AI 基础模型矩阵**：
-  搭载 **GPT 120B**、**Claude Sonnet**、**Claude Opus**、**Gemini 3.1 Pro**、**Gemini 3.8 Flash** 以及 **Grok 4.20**，兼顾大参数深层模式挖掘、极速推理与异构多元思维。
+  搭载 **GPT 120B**、**Claude Sonnet**、**Claude Opus**、**Gemini 3.1 Pro**、**Gemini 3.8 Flash** 以及 **Gemini 3.7 Flash**，兼顾大参数深层模式挖掘、极速推理与多维深度动量分析。
 - 🧠 **MoE 超级裁判 (v4.0 双轨对冲版)**：
   终极预测由裁判 AI 站在 MoE 全局高度进行数学硬约束筛选，彻底杜绝前端无序随机凑号。
 - 📈 **宿主端 Python 特征工程 (50 期深度窗口)**：
@@ -65,7 +65,7 @@ graph TD
     C --> D3[Gemini 3.1 Pro]
     C --> D4[Claude Opus]
     C --> D5[Gemini 3.8 Flash]
-    C --> D6[Grok 4.20]
+    C --> D6[Gemini 3.7 Flash]
     
     D1 & D2 & D3 & D4 & D5 & D6 -->|并发产出各5组策略预测| E[MetaAI 超级裁判 (MoE v4.0)]
     
@@ -92,7 +92,7 @@ graph TD
 | **Google** | **Gemini 3.1 Pro** | `gemini-3.1-pro-low` | 超长上下文趋势关联，敏锐捕获多周期跨度规律 |
 | **Anthropic** | **Claude Opus** | `claude-opus-4-6-thinking` | 深度思维链（Thinking），作为基准模型并兼任超级裁判 |
 | **Google** | **Gemini 3.8 Flash** | `gemini-3.8-flash-high` | 高响应低延迟，聚焦近期高频爆发号与短期波动 |
-| **xAI** | **Grok 4.20** | `grok-4.20-fast` | 异构探索思维，打破主流模型共识锁定，挖掘冷态奇袭号 |
+| **Google** | **Gemini 3.7 Flash** | `gemini-3.7-flash-high` | 强推理旗舰 Flash，深度结合短中期动量与均值回归 |
 
 ### 3. MetaAI 超级裁判双轨裁决机制
 - **共识提炼**：聚合并统计 6 个模型共 30 组预测的红蓝球投票频次，提炼核心共识池；
