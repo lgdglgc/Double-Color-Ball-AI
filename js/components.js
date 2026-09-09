@@ -39,6 +39,7 @@ const Components = {
         if (modelName.includes('Claude')) return 'model-header-claude';
         if (modelName.includes('DeepSeek')) return 'model-header-deepseek';
         if (modelName.includes('Gemini')) return 'model-header-gemini';
+        if (modelName.includes('Grok')) return 'model-header-grok';
         return 'model-header-gpt';
     },
 

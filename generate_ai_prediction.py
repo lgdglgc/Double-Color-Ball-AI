@@ -9,11 +9,11 @@ import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timedelta, timezone
 try:
     from zoneinfo import ZoneInfo
     BEIJING_TZ = ZoneInfo("Asia/Shanghai")
 except ImportError:
-    from datetime import timezone
     BEIJING_TZ = timezone(timedelta(hours=8))
 
 try:
@@ -35,14 +35,14 @@ if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
 BASE_URL = os.environ.get("AI_BASE_URL") or "https://aihubmix.com/v1"
 API_KEY = os.environ.get("AI_API_KEY")
 
-# 模型配置列表
+# 模型配置列表（稳定支持的 6 大旗舰模型矩阵）
 MODELS = [
     {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "GPT-120B-OSS"},
     {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
     {"id": "gemini-3.1-pro-low", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
     {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"},
-    {"id": "gemini-3.5-flash-low", "name": "Gemini 3.5 Flash Low", "model_id": "Gemini-3.5-Flash-Low"},
-    {"id": "gemini-3.5-flash-extra-low", "name": "Gemini 3.5 Flash Ex-Low", "model_id": "Gemini-3.5-Flash-Extra-Low"},
+    {"id": "gemini-3.8-flash-high", "name": "Gemini 3.8 Flash", "model_id": "Gemini-3.8-Flash"},
+    {"id": "grok-4.3-fast", "name": "Grok 4.3", "model_id": "Grok-4.3-Fast"},
 ]
 
 # 文件路径
@@ -590,7 +590,7 @@ def generate_predictions() -> Dict[str, Any]:
     # 并行多线程调用所有基础模型
     print("🔮 开始并发调用基础模型矩阵...\n")
     results_by_id = {}
-    max_workers = min(len(MODELS), 5)
+    max_workers = min(len(MODELS), 6)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {
             executor.submit(
