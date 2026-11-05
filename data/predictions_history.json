@@ -2,6 +2,619 @@
   "历史预测记录": "本文件保存已开奖期号的AI预测数据，用于对比和统计",
   "predictions_history": [
     {
+      "prediction_date": "2026-11-05",
+      "target_period": "26127",
+      "actual_result": {
+        "period": "26127",
+        "red_balls": [
+          "13",
+          "14",
+          "19",
+          "25",
+          "29",
+          "32"
+        ],
+        "blue_ball": "12",
+        "date": "2026-11-05"
+      },
+      "models": [
+        {
+          "model_id": "MetaAI-MoE",
+          "model_name": "MetaAI 超级裁判",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "稳健共识型",
+              "red_balls": [
+                "04",
+                "11",
+                "13",
+                "22",
+                "26",
+                "30"
+              ],
+              "blue_ball": "04",
+              "description": "基础模型羊群效应明显：22/26/04/14/30扎堆严重，二区过热。纠偏要点：1)强制引入温冷回补号08/12/25/28/33及深冷08；2)一区三区非对称布阵打破二区垄断；3)蓝球分散至04/1",
+              "hit_result": {
+                "red_hits": [
+                  "13"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷热平衡型",
+              "red_balls": [
+                "07",
+                "12",
+                "18",
+                "25",
+                "28",
+                "33"
+              ],
+              "blue_ball": "14",
+              "description": "基础模型羊群效应明显：22/26/04/14/30扎堆严重，二区过热。纠偏要点：1)强制引入温冷回补号08/12/25/28/33及深冷08；2)一区三区非对称布阵打破二区垄断；3)蓝球分散至04/1",
+              "hit_result": {
+                "red_hits": [
+                  "25"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "奇数强击型",
+              "red_balls": [
+                "09",
+                "10",
+                "14",
+                "21",
+                "29",
+                "31"
+              ],
+              "blue_ball": "07",
+              "description": "基础模型羊群效应明显：22/26/04/14/30扎堆严重，二区过热。纠偏要点：1)强制引入温冷回补号08/12/25/28/33及深冷08；2)一区三区非对称布阵打破二区垄断；3)蓝球分散至04/1",
+              "hit_result": {
+                "red_hits": [
+                  "14",
+                  "29"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "二区奇袭型",
+              "red_balls": [
+                "01",
+                "03",
+                "05",
+                "20",
+                "23",
+                "32"
+              ],
+              "blue_ball": "16",
+              "description": "基础模型羊群效应明显：22/26/04/14/30扎堆严重，二区过热。纠偏要点：1)强制引入温冷回补号08/12/25/28/33及深冷08；2)一区三区非对称布阵打破二区垄断；3)蓝球分散至04/1",
+              "hit_result": {
+                "red_hits": [
+                  "32"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "逆向防冷型",
+              "red_balls": [
+                "02",
+                "06",
+                "15",
+                "16",
+                "24",
+                "27"
+              ],
+              "blue_ball": "10",
+              "description": "基础模型羊群效应明显：22/26/04/14/30扎堆严重，二区过热。纠偏要点：1)强制引入温冷回补号08/12/25/28/33及深冷08；2)一区三区非对称布阵打破二区垄断；3)蓝球分散至04/1",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            }
+          ],
+          "best_group": 3,
+          "best_hit_count": 2
+        },
+        {
+          "model_id": "GPT-120B-OSS",
+          "model_name": "GPT 120B",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "热号追随者",
+              "red_balls": [
+                "04",
+                "09",
+                "14",
+                "22",
+                "26",
+                "30"
+              ],
+              "blue_ball": "04",
+              "description": "加权热度Top号搭配上期重邻号；区间1-3-2；蓝球选近热号",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷号逆向者",
+              "red_balls": [
+                "08",
+                "12",
+                "21",
+                "25",
+                "28",
+                "33"
+              ],
+              "blue_ball": "14",
+              "description": "精选7-18期温冷均值回归号，防0-1个深冷；蓝球选7-16期温冷回归号",
+              "hit_result": {
+                "red_hits": [
+                  "25"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "连重邻形态师",
+              "red_balls": [
+                "04",
+                "14",
+                "15",
+                "22",
+                "28",
+                "31"
+              ],
+              "blue_ball": "01",
+              "description": "含1对二连号+重邻号传承；总和114在核心段；蓝球执行012路轮转",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "周期与振幅分析师",
+              "red_balls": [
+                "05",
+                "12",
+                "14",
+                "22",
+                "26",
+                "29"
+              ],
+              "blue_ball": "15",
+              "description": "追踪多周期加速上升动量号；蓝球契合黄金振幅，重点布局大号区",
+              "hit_result": {
+                "red_hits": [
+                  "14",
+                  "29"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "综合决策者",
+              "red_balls": [
+                "09",
+                "12",
+                "13",
+                "22",
+                "26",
+                "33"
+              ],
+              "blue_ball": "07",
+              "description": "热号+温冷+重号+动量共识；奇偶三区平衡，蓝球兼顾",
+              "hit_result": {
+                "red_hits": [
+                  "13"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            }
+          ],
+          "best_group": 4,
+          "best_hit_count": 2
+        },
+        {
+          "model_id": "Claude-Sonnet-4.6",
+          "model_name": "Claude Sonnet",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "热号追随者",
+              "red_balls": [
+                "04",
+                "11",
+                "13",
+                "22",
+                "26",
+                "30"
+              ],
+              "blue_ball": "04",
+              "description": "热度Top号04/22/26/30+重号13+邻号11；区间2-2-2；蓝球选近热号04",
+              "hit_result": {
+                "red_hits": [
+                  "13"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷号逆向者",
+              "red_balls": [
+                "07",
+                "12",
+                "18",
+                "25",
+                "28",
+                "33"
+              ],
+              "blue_ball": "14",
+              "description": "精选7-18期温冷回归号12/25/28/33+邻号支撑；蓝球选遗漏8期温冷14",
+              "hit_result": {
+                "red_hits": [
+                  "25"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "连重邻形态师",
+              "red_balls": [
+                "09",
+                "10",
+                "14",
+                "22",
+                "28",
+                "31"
+              ],
+              "blue_ball": "11",
+              "description": "含09-10二连号+重号22+邻号14/31；总和114在核心段；蓝球1路轮转11",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "周期与振幅分析师",
+              "red_balls": [
+                "06",
+                "20",
+                "22",
+                "23",
+                "26",
+                "29"
+              ],
+              "blue_ball": "10",
+              "description": "追踪动量Top号22/26/20/23/29+拐点号06；蓝球黄金振幅大号区10",
+              "hit_result": {
+                "red_hits": [
+                  "29"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "综合决策者",
+              "red_balls": [
+                "04",
+                "14",
+                "22",
+                "25",
+                "29",
+                "30"
+              ],
+              "blue_ball": "05",
+              "description": "融合热号22/30+温冷25/14+重号29+动量04；奇偶3:3，蓝球兼顾对冲05",
+              "hit_result": {
+                "red_hits": [
+                  "14",
+                  "25",
+                  "29"
+                ],
+                "red_hit_count": 3,
+                "blue_hit": false,
+                "total_hits": 3
+              }
+            }
+          ],
+          "best_group": 5,
+          "best_hit_count": 3
+        },
+        {
+          "model_id": "Claude-Opus-4.6",
+          "model_name": "Claude Opus",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "热号追随者",
+              "red_balls": [
+                "04",
+                "13",
+                "14",
+                "22",
+                "26",
+                "30"
+              ],
+              "blue_ball": "04",
+              "description": "加权热度Top4+22搭配重号13邻号14；区间1-3-2；蓝球热态04",
+              "hit_result": {
+                "red_hits": [
+                  "13",
+                  "14"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷号逆向者",
+              "red_balls": [
+                "11",
+                "12",
+                "21",
+                "25",
+                "28",
+                "33"
+              ],
+              "blue_ball": "14",
+              "description": "温冷回补12/25/28/33为核心，邻号11/21支撑；蓝球温冷14回归",
+              "hit_result": {
+                "red_hits": [
+                  "25"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "连重邻形态师",
+              "red_balls": [
+                "09",
+                "11",
+                "14",
+                "21",
+                "22",
+                "30"
+              ],
+              "blue_ball": "07",
+              "description": "重号09/22+邻号11/21+连号21-22；和值107；蓝球1路轮转07",
+              "hit_result": {
+                "red_hits": [
+                  "14"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "周期与振幅分析师",
+              "red_balls": [
+                "04",
+                "20",
+                "22",
+                "23",
+                "26",
+                "29"
+              ],
+              "blue_ball": "10",
+              "description": "动量加速号22/26/29/20/23为核心；蓝球振幅大号区10",
+              "hit_result": {
+                "red_hits": [
+                  "29"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "综合决策者",
+              "red_balls": [
+                "04",
+                "13",
+                "20",
+                "25",
+                "26",
+                "30"
+              ],
+              "blue_ball": "11",
+              "description": "热号04/26+温冷25/13+重号13+动量20/30；三区2-2-2平衡",
+              "hit_result": {
+                "red_hits": [
+                  "13",
+                  "25"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            }
+          ],
+          "best_group": 1,
+          "best_hit_count": 2
+        },
+        {
+          "model_id": "Gemini-3.8-Flash",
+          "model_name": "Gemini 3.8 Flash",
+          "predictions": [
+            {
+              "group_id": 1,
+              "strategy": "热号追随者",
+              "red_balls": [
+                "04",
+                "11",
+                "13",
+                "22",
+                "26",
+                "30"
+              ],
+              "blue_ball": "11",
+              "description": "加权热度Top号搭配重邻号传承；区间2:2:2；蓝球选近热号",
+              "hit_result": {
+                "red_hits": [
+                  "13"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 2,
+              "strategy": "冷号逆向者",
+              "red_balls": [
+                "07",
+                "08",
+                "12",
+                "25",
+                "28",
+                "33"
+              ],
+              "blue_ball": "14",
+              "description": "精选温冷回补号搭防守冷号；奇偶3:3尾数5个；蓝球选温冷回归",
+              "hit_result": {
+                "red_hits": [
+                  "25"
+                ],
+                "red_hit_count": 1,
+                "blue_hit": false,
+                "total_hits": 1
+              }
+            },
+            {
+              "group_id": 3,
+              "strategy": "连重邻形态师",
+              "red_balls": [
+                "06",
+                "10",
+                "17",
+                "22",
+                "23",
+                "30"
+              ],
+              "blue_ball": "07",
+              "description": "含22-23二连号与重邻号传承；和值108；蓝球轮转1路号",
+              "hit_result": {
+                "red_hits": [],
+                "red_hit_count": 0,
+                "blue_hit": false,
+                "total_hits": 0
+              }
+            },
+            {
+              "group_id": 4,
+              "strategy": "周期与振幅分析师",
+              "red_balls": [
+                "07",
+                "14",
+                "20",
+                "23",
+                "26",
+                "29"
+              ],
+              "blue_ball": "16",
+              "description": "上升动量号搭配周期拐点号；奇偶3:3；蓝球黄金振幅大号",
+              "hit_result": {
+                "red_hits": [
+                  "14",
+                  "29"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            },
+            {
+              "group_id": 5,
+              "strategy": "综合决策者",
+              "red_balls": [
+                "04",
+                "12",
+                "20",
+                "24",
+                "25",
+                "29"
+              ],
+              "blue_ball": "05",
+              "description": "融合热冷形态周期共识；三区1:2:3奇偶均衡；蓝球对冲轮转",
+              "hit_result": {
+                "red_hits": [
+                  "25",
+                  "29"
+                ],
+                "red_hit_count": 2,
+                "blue_hit": false,
+                "total_hits": 2
+              }
+            }
+          ],
+          "best_group": 4,
+          "best_hit_count": 2
+        }
+      ]
+    },
+    {
       "prediction_date": "2026-11-03",
       "target_period": "26126",
       "actual_result": {
