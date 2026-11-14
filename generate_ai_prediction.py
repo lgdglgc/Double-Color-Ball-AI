@@ -36,13 +36,14 @@ BASE_URL = os.environ.get("AI_BASE_URL") or "https://aihubmix.com/v1"
 API_KEY = os.environ.get("AI_API_KEY")
 
 # 模型配置列表（稳定支持的 6 大旗舰模型矩阵）
+# 模型配置列表（适配智谱 API）
 MODELS = [
-    {"id": "gpt-oss-120b-medium", "name": "GPT 120B", "model_id": "GPT-120B-OSS"},
-    {"id": "claude-sonnet-4-6", "name": "Claude Sonnet", "model_id": "Claude-Sonnet-4.6"},
-    {"id": "gemini-3.1-pro-low", "name": "Gemini 3.1 Pro", "model_id": "Gemini-3.1-Pro"},
-    {"id": "claude-opus-4-6-thinking", "name": "Claude Opus", "model_id": "Claude-Opus-4.6"},
-    {"id": "gemini-3.8-flash-high", "name": "Gemini 3.8 Flash", "model_id": "Gemini-3.8-Flash"},
-    {"id": "gemini-3.7-flash-high", "name": "Gemini 3.7 Flash", "model_id": "Gemini-3.7-Flash"},
+    {"id": "glm-4-flash", "name": "智谱 GLM-4 Flash", "model_id": "GLM-4-Flash"},
+    {"id": "glm-4-flash", "name": "智谱 GLM-4 Flash (备选1)", "model_id": "GLM-4-Flash"},
+    {"id": "glm-4-flash", "name": "智谱 GLM-4 Flash (备选2)", "model_id": "GLM-4-Flash"},
+    {"id": "glm-4-flash", "name": "智谱 GLM-4 Flash (备选3)", "model_id": "GLM-4-Flash"},
+    {"id": "glm-4-flash", "name": "智谱 GLM-4 Flash (备选4)", "model_id": "GLM-4-Flash"},
+    {"id": "glm-4-flash", "name": "智谱 GLM-4 Flash (备选5)", "model_id": "GLM-4-Flash"},
 ]
 
 # 文件路径
