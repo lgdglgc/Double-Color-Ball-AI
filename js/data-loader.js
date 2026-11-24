@@ -4,13 +4,18 @@
  */
 
 const DataLoader = {
+    // 缓存破坏参数：每次加载附加时间戳，强制绕过浏览器对 JSON 的启发式缓存
+    _bust(url) {
+        return `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+    },
+
     /**
      * 加载历史开奖数据
      * @returns {Promise<Object>} 历史数据对象
      */
     async loadLotteryHistory() {
         try {
-            const response = await fetch('./data/lottery_history.json');
+            const response = await fetch(this._bust('./data/lottery_history.json'), { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -29,7 +34,7 @@ const DataLoader = {
      */
     async loadPredictions() {
         try {
-            const response = await fetch('./data/ai_predictions.json');
+            const response = await fetch(this._bust('./data/ai_predictions.json'), { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -48,7 +53,7 @@ const DataLoader = {
      */
     async loadPredictionsHistory() {
         try {
-            const response = await fetch('./data/predictions_history.json');
+            const response = await fetch(this._bust('./data/predictions_history.json'), { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
